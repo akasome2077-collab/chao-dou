@@ -68,6 +68,8 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 
 <div id="loader"><div class="diamond"></div></div>
 <div class="cine" id="cine"></div>
+<iframe id="music-frame" src="https://music.163.com/outchain/player?type=2&id=530995517&auto=1&height=66" allow="autoplay" style="position:fixed;bottom:-200px;left:0;width:100%;height:86px;z-index:60;border:none;transition:bottom .5s"></iframe>
+<button id="music-btn" onclick="toggleMusic()" style="position:fixed;bottom:20px;right:20px;z-index:61;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,45,85,.5);background:rgba(255,45,85,.12);color:#fff;font-size:1.2rem;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;transition:all .3s">🎵</button>
 
 <canvas id="bg"></canvas>
 <canvas id="ring-canvas"></canvas>
@@ -642,6 +644,26 @@ function startFireworks() {
     if (elapsed < 105) requestAnimationFrame(fwLoop);
   })(performance.now());
 }
+
+// ============================================================
+// MUSIC CONTROL
+// ============================================================
+let musicOn = true;
+
+window.toggleMusic = function() {
+  const frame = document.getElementById('music-frame');
+  const btn = document.getElementById('music-btn');
+  musicOn = !musicOn;
+  frame.style.bottom = musicOn ? '0' : '-200px';
+  btn.style.borderColor = musicOn ? 'rgba(255,45,85,.5)' : 'rgba(255,255,255,.25)';
+  btn.style.background = musicOn ? 'rgba(255,45,85,.12)' : 'rgba(0,0,0,.5)';
+  btn.innerHTML = musicOn ? '🎵' : '🔇';
+};
+
+// Try to show player after a short delay (some browsers need this for auto=1)
+setTimeout(function() {
+  document.getElementById('music-frame').style.bottom = '0';
+}, 1500);
 
 // ============================================================
 // START
