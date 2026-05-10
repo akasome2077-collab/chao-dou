@@ -66,6 +66,10 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 @keyframes flapOpen{0%{transform:perspective(600px) rotateX(0)}100%{transform:perspective(600px) rotateX(-175deg)}}
 .env-msg{font-size:clamp(1.3rem,3vw,1.8rem);color:#5a4030;font-weight:400;letter-spacing:3px;opacity:0;animation:envMsgIn .8s 1.2s forwards}
 @keyframes envMsgIn{to{opacity:1}}
+
+/* Ring emoji */
+.ring-emoji{font-size:clamp(8rem,28vw,18rem);animation:ringPulse 1.8s ease-in-out infinite;filter:drop-shadow(0 0 60px rgba(255,215,0,.5)) drop-shadow(0 0 120px rgba(255,180,50,.3))}
+@keyframes ringPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 50px rgba(255,215,0,.4)) drop-shadow(0 0 100px rgba(255,180,50,.2))}50%{transform:scale(1.08);filter:drop-shadow(0 0 80px rgba(255,215,0,.7)) drop-shadow(0 0 160px rgba(255,180,50,.45))}}
 </style>
 </head>
 <body>
@@ -76,44 +80,47 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 <canvas id="fw-canvas"></canvas>
 
 <!-- S1: Envelope -->
-<div class="scene" id="s1"><div class="inner"><div class="env-wrap"><div class="env-body" id="envBody"><div class="env-flap" id="envFlap"></div><div class="env-msg">亲爱的小chao</div></div></div></div></div>
+<div class="scene" id="s1"><div class="inner"><div class="env-wrap"><div class="env-body" id="envBody"><div class="env-flap" id="envFlap"></div></div></div></div></div>
 
-<!-- S2-S6: 5 lyric pages — staggered reveal -->
-<div class="scene" id="s2"><div class="inner"><div class="lyric-wrap">
+<!-- S2: 亲爱的小chao -->
+<div class="scene" id="s2"><div class="inner"><div class="s1-text">亲爱的小chao</div></div></div>
+
+<!-- S3-S7: 5 lyric pages — staggered reveal -->
+<div class="scene" id="s3"><div class="inner"><div class="lyric-wrap">
   <span class="lyric-stagger" style="--d:.2s">记得那天 太阳压着平原</span>
   <span class="lyric-stagger" style="--d:.9s">风慢慢吹 没有人掉眼泪</span>
 </div></div></div>
-<div class="scene" id="s3"><div class="inner"><div class="lyric-wrap">
+<div class="scene" id="s4"><div class="inner"><div class="lyric-wrap">
   <span class="lyric-stagger" style="--d:.2s">一切好美 好到我可以不用说</span>
   <span class="lyric-stagger" style="--d:.9s">金色的侧脸 踩着全白球鞋</span>
 </div></div></div>
-<div class="scene" id="s4"><div class="inner"><div class="lyric-wrap">
+<div class="scene" id="s5"><div class="inner"><div class="lyric-wrap">
   <span class="lyric-stagger" style="--d:.2s">风继续吹 世界继续作业</span>
   <span class="lyric-stagger" style="--d:.9s">那么确定 我知道那就是<b>你</b></span>
 </div></div></div>
-<div class="scene" id="s5"><div class="inner"><div class="lyric-wrap">
+<div class="scene" id="s6"><div class="inner"><div class="lyric-wrap">
   <span class="lyric-stagger" style="--d:.2s">那一天你走进了我的生命</span>
   <span class="lyric-stagger" style="--d:.9s">谢谢你 成为了我的<b>几分之几</b></span>
 </div></div></div>
-<div class="scene" id="s6"><div class="inner"><div class="lyric-wrap">
+<div class="scene" id="s7"><div class="inner"><div class="lyric-wrap">
   <span class="lyric-stagger" style="--d:.2s">闭上眼睛也能看见你</span>
   <span class="lyric-stagger" style="--d:.9s">晴朗的<b>南方</b></span>
 </div></div></div>
 
 <!-- S7: 我爱你 -->
-<div class="scene" id="s7"><div class="inner"><div class="ily-text">我 爱 你</div></div></div>
+<div class="scene" id="s8"><div class="inner"><div class="ily-text">我 爱 你</div></div></div>
 
-<!-- S8: 3D Ring -->
-<div class="scene" id="s8"><div id="ring3d"></div></div>
+<!-- S9: Ring emoji -->
+<div class="scene" id="s9"><div class="inner"><div class="ring-emoji">💍</div></div></div>
 
 <!-- S9: 3D Rose VR -->
-<div class="scene" id="s9"><div id="rosevr"></div></div>
+<div class="scene" id="s10"><div id="rosevr"></div></div>
 
 <!-- S10: Proposal -->
-<div class="scene" id="s10"><div class="inner"><div class="s9-q">嫁给我，好吗？</div><div class="s9-btns"><button class="s9-btn" onclick="answer()">💍 我愿意</button><button class="s9-btn" onclick="answer()">💖 非常愿意</button></div></div></div>
+<div class="scene" id="s11"><div class="inner"><div class="s9-q">嫁给我，好吗？</div><div class="s9-btns"><button class="s9-btn" onclick="answer()">💍 我愿意</button><button class="s9-btn" onclick="answer()">💖 非常愿意</button></div></div></div>
 
 <!-- S11: Fireworks -->
-<div class="scene" id="s11"><div class="inner"><div class="fw-title">曹璐  💍  我爱你</div><div class="fw-sub">—— 来自永远爱你的 zz</div></div></div>
+<div class="scene" id="s12"><div class="inner"><div class="fw-title">曹璐  💍  我爱你</div><div class="fw-sub">—— 来自永远爱你的 zz</div></div></div>
 
 <script>
 // ============================================================
@@ -148,7 +155,7 @@ requestAnimationFrame(bgLoop)})();
 // ============================================================
 var cur=0;
 const scenes={};
-for(let i=1;i<=11;i++)scenes[i]=document.getElementById('s'+i);
+for(let i=1;i<=12;i++)scenes[i]=document.getElementById('s'+i);
 const cine=document.getElementById('cine');
 
 function go(from,to){
@@ -157,11 +164,11 @@ function go(from,to){
   scenes[to].classList.add('active');
   cur=to;
   if(to===1){setTimeout(()=>document.getElementById('envFlap').classList.add('open'),400)}
-  if(to===7)spawnFloatEls(60);
-  if(to===8)startRing3D();
-  if(to===9){stopRing3D();startRoseVR();}
-  if(to===10)spawnFloatEls(40);
-  if(to===11){stopRoseVR();startFireworks()}
+  if(to===8)spawnFloatEls(60);
+  if(to===9){spawnFloatEls(30);setTimeout(()=>{if(cur===9)go(9,10)},6000)}
+  if(to===10){startRoseVR();}
+  if(to===11)spawnFloatEls(40);
+  if(to===12){stopRoseVR();startFireworks()}
 }
 
 function spawnFloatEls(count){
@@ -179,271 +186,210 @@ bgm.play().catch(()=>{musicOn=false;document.addEventListener('click',function r
 </script>
 
 <!-- ============================================================
-THREE.JS MODULE: Ring (S8) + Rose VR (S9)
+THREE.JS MODULE: Rose VR (S10)
 ============================================================ -->
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ============================================================
-// DIAMOND GEOMETRY HELPER
-// ============================================================
-function createDiamondGeo(size){
-  const s=size;
-  const geo=new THREE.BufferGeometry();
-  const verts=[
-    // Crown (top)
-    0,s,0,
-    -s*.55,s*.3,s*.3, s*.55,s*.3,s*.3, s*.55,s*.3,-s*.3, -s*.55,s*.3,-s*.3,
-    // Girdle
-    -s*.7,0,s*.4, s*.7,0,s*.4, s*.7,0,-s*.4, -s*.7,0,-s*.4,
-    // Pavilion
-    0,-s*.8,0,
-  ];
-  const indices=[
-    0,1,2, 0,2,3, 0,3,4, 0,4,1,
-    1,5,2, 2,5,6, 2,6,3, 3,6,7, 3,7,4, 4,7,8, 4,8,1, 1,8,5,
-    5,9,6, 6,9,7, 7,9,8, 8,9,5,
-  ];
-  geo.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
-  geo.setIndex(indices);
-  geo.computeVertexNormals();
-  return geo;
-}
-
-// ============================================================
-// S8: 3D RING
-// ============================================================
-let ringData=null;
-
-window.startRing3D=function(){
-  if(ringData)return;
-  const container=document.getElementById('ring3d');
-  const size=Math.min(W*.85,H*.7,420);
-
-  const scene=new THREE.Scene();
-  const cam=new THREE.PerspectiveCamera(30,1,.1,20);
-  cam.position.set(0,1.6,7);cam.lookAt(0,0,0);
-
-  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
-  renderer.setSize(size,size);renderer.setPixelRatio(Math.min(dpr,2));
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.4;
-  container.appendChild(renderer.domElement);
-
-  // Lighting
-  scene.add(new THREE.AmbientLight('#332244',2));
-  const k=new THREE.DirectionalLight('#fff',5);k.position.set(5,5,8);scene.add(k);
-  const f=new THREE.DirectionalLight('#ff99bb',2);f.position.set(-3,1,-2);scene.add(f);
-  const r=new THREE.DirectionalLight('#8899ff',2);r.position.set(0,-2,3);scene.add(r);
-  const top=new THREE.PointLight('#fff',25,10);top.position.set(0,3,0);scene.add(top);
-
-  // Ring group (for spinning)
-  const ringGroup=new THREE.Group();scene.add(ringGroup);
-
-  // Band
-  const bandGeo=new THREE.TorusGeometry(1.35,.2,64,120);
-  const bandMat=new THREE.MeshStandardMaterial({color:'#e8d48b',metalness:.97,roughness:.08});
-  const band=new THREE.Mesh(bandGeo,bandMat);
-  band.rotation.x=Math.PI*.45;band.rotation.z=.25;
-  ringGroup.add(band);
-
-  // Inner accent rings
-  for(let s=-1;s<=1;s+=2){
-    const ag=new THREE.TorusGeometry(1.57,.025,36,100);
-    const am=new THREE.MeshStandardMaterial({color:'#ffd700',metalness:.95,roughness:.14});
-    const ar=new THREE.Mesh(ag,am);ar.rotation.copy(band.rotation);ar.position.y=s*.14;ringGroup.add(ar);
-  }
-
-  // Diamond
-  const diamondGeo=createDiamondGeo(.45);
-  const diamondMat=new THREE.MeshPhysicalMaterial({color:'#fff',metalness:0,roughness:.02,clearcoat:.6,clearcoatRoughness:.03,emissive:'#4488cc',emissiveIntensity:.12,specularIntensity:1.4});
-  const diamond=new THREE.Mesh(diamondGeo,diamondMat);
-  diamond.position.y=1.75;ringGroup.add(diamond);
-
-  // Setting/prongs
-  for(let i=0;i<6;i++){
-    const a=i*Math.PI/3;
-    const pg=new THREE.CylinderGeometry(.018,.025,.7,8);
-    const pm=new THREE.MeshStandardMaterial({color:'#ffd700',metalness:.96,roughness:.08});
-    const pr=new THREE.Mesh(pg,pm);
-    pr.position.set(Math.cos(a)*.3,1.5,Math.sin(a)*.3);ringGroup.add(pr);
-  }
-
-  // Sparkle particles
-  const sparkCount=60;
-  const sparkGeo=new THREE.BufferGeometry();
-  const sparkPos=new Float32Array(sparkCount*3);
-  const sparkData=[];
-  for(let i=0;i<sparkCount;i++){
-    const a=Math.random()*Math.PI*2,rd=.5+Math.random()*2.5,ht=(Math.random()-.5)*4;
-    sparkPos[i*3]=Math.cos(a)*rd;sparkPos[i*3+1]=ht;sparkPos[i*3+2]=Math.sin(a)*rd;
-    sparkData.push({ba:a,br:rd,h:ht,sp:.3+Math.random()*1.5,ph:Math.random()*Math.PI*2});
-  }
-  sparkGeo.setAttribute('position',new THREE.BufferAttribute(sparkPos,3));
-  const sparkMat=new THREE.PointsMaterial({color:'#ffd700',size:.025,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.7});
-  const sparkPoints=new THREE.Points(sparkGeo,sparkMat);scene.add(sparkPoints);
-
-  // Ground glow
-  const glowGeo=new THREE.PlaneGeometry(8,8);
-  const glowMat=new THREE.ShaderMaterial({uniforms:{uT:{value:0}},vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,fragmentShader:`varying vec2 vUv;uniform float uT;void main(){float d=length(vUv-.5)*2.;float a=smoothstep(1.,0.,d)*.16;gl_FragColor=vec4(1.,.84,0,a*(.7+.3*sin(uT*2.)));}`,transparent:true,depthWrite:false});
-  const glowPlane=new THREE.Mesh(glowGeo,glowMat);glowPlane.rotation.x=-Math.PI/2;glowPlane.position.y=-2.5;scene.add(glowPlane);
-
-  ringData={scene,cam,renderer,ringGroup,band,diamond,diamondMat,sparkPoints,sparkGeo,sparkPos,sparkData,sparkCount,glowMat,top,startTime:performance.now()};
-
-  // Auto advance
-  setTimeout(()=>{if(window.cur===8)window.go(8,9)},10000);
-
-  // Tap to skip
-  const s8el=document.getElementById('s8');
-  s8el.addEventListener('click',function sk(){if(window.cur===8)window.go(8,9);s8el.removeEventListener('click',sk)});
-
-  // Mouse/touch rotate
-  let tRY=.25;
-  renderer.domElement.addEventListener('mousemove',e=>{const r=renderer.domElement.getBoundingClientRect();tRY=.25+((e.clientX-r.left-r.width/2)/r.width)*2.5});
-  renderer.domElement.addEventListener('touchmove',e=>{const r=renderer.domElement.getBoundingClientRect();tRY=.25+((e.touches[0].clientX-r.left-r.width/2)/r.width)*2.5},{passive:true});
-
-  function anim(ts){
-    if(!ringData)return;
-    ringData.fid=requestAnimationFrame(anim);
-    const et=(ts-ringData.startTime)*.001;
-
-    // Spin: fast → slow
-    let spinSpeed;
-    if(et<.5)spinSpeed=8;else if(et<2.5)spinSpeed=8-(et-.5)*3.5;else spinSpeed=1;
-    ringGroup.rotation.y+=spinSpeed*.016;
-
-    // Tilt toward viewer slowly
-    ringGroup.rotation.x+=(tRY-ringGroup.rotation.x)*.03;
-
-    // Diamond bob
-    diamond.position.y=1.75+Math.sin(et*1.8)*.08;
-
-    // Sparkles
-    const pa=sparkGeo.attributes.position.array;
-    for(let i=0;i<sparkCount;i++){const d=sparkData[i];d.ba+=d.sp*.004;const a=d.ba,rd=d.br+Math.sin(et*3+d.ph)*.3;d.h+=Math.sin(et*2.5+d.ph)*.006;if(Math.abs(d.h)>2.2)d.h*=-1;pa[i*3]=Math.cos(a)*rd;pa[i*3+1]=d.h;pa[i*3+2]=Math.sin(a)*rd}
-    sparkGeo.attributes.position.needsUpdate=true;
-
-    diamondMat.emissiveIntensity=.08+.2*Math.abs(Math.sin(et*2.5));
-    top.intensity=22+10*Math.sin(et*1.3);
-    glowMat.uniforms.uT.value=et;
-    renderer.render(scene,cam);
-  }
-  ringData.fid=requestAnimationFrame(anim);
-};
-
-window.stopRing3D=function(){
-  if(!ringData)return;
-  cancelAnimationFrame(ringData.fid);
-  ringData.renderer.domElement.remove();
-  ringData=null;
-};
-
-// ============================================================
-// S9: 3D ROSE BOUQUET VR
+// S10: 3D ROSE BOUQUET VR — premium detailed rose
 // ============================================================
 let roseData=null;
 
-function createPetalGeo(w,h,curve){
+// High-poly realistic rose petal with complex 3D curvature
+function createPetalGeo(w, h, cu, crl){
+  const sw=16, sh=14; // high segment count for smooth curves
   const shape=new THREE.Shape();
-  shape.moveTo(0,0);
-  shape.bezierCurveTo(w*.45,h*.08,w*.65,h*.38,w*.12,h*.88);
-  shape.bezierCurveTo(0,h,-w*.12,h*.88,-w*.65,h*.38);
-  shape.bezierCurveTo(-w*.45,h*.08,0,0,0,0);
-  const geo=new THREE.ShapeGeometry(shape,6,8);
-  const pos=geo.attributes.position;
-  for(let i=0;i<pos.count;i++){const x=pos.getX(i),y=pos.getY(i);pos.setZ(i,curve*(y/h)*(y/h)*(1-Math.abs(x/w)*.35))}
+  // Realistic obovate petal: narrow base, wide middle, rounded tip
+  shape.moveTo(0, -h*0.04);
+  shape.bezierCurveTo(w*0.22, h*0.02, w*0.54, h*0.06, w*0.88, h*0.22);
+  shape.bezierCurveTo(w*1.08, h*0.35, w*1.12, h*0.55, w*0.72, h*0.74);
+  shape.bezierCurveTo(w*0.35, h*0.92, w*0.05, h*1.0, 0, h*1.02);
+  shape.bezierCurveTo(-w*0.05, h*1.0, -w*0.35, h*0.92, -w*0.72, h*0.74);
+  shape.bezierCurveTo(-w*1.12, h*0.55, -w*1.08, h*0.35, -w*0.88, h*0.22);
+  shape.bezierCurveTo(-w*0.54, h*0.06, -w*0.22, h*0.02, 0, -h*0.04);
+
+  const geo=new THREE.ShapeGeometry(shape, sw, sh);
+  const pa=geo.attributes.position;
+
+  // Apply complex 3D curvature
+  for(let i=0; i<pa.count; i++){
+    const x=pa.getX(i), y=pa.getY(i);
+    const t = (y/h + 0.04) / 1.06; // normalized 0..1 from base to tip
+    const rx = Math.abs(x/w);
+    // Cup curvature: strongest near base, decreases outward
+    let z = cu * Math.pow(t, 1.8) * (1 - rx*0.4) * (1 - rx);
+    // Backward curl near the tip edge
+    z -= crl * Math.pow(Math.max(0, t-0.45), 2.2) * Math.pow(rx, 2.5);
+    // Gentle wavy ruffle along edges
+    z += 0.012 * Math.sin(rx*12) * t * (1 - t*0.7);
+    pa.setZ(i, z);
+  }
   geo.computeVertexNormals();
   return geo;
 }
 
-function createRose(mat){
+// Vertex-colored petal material for gradient (dark at base → rich red at tip)
+function createPetalGeoWithColors(w, h, cu, crl, colorBase, colorTip){
+  const sw=16, sh=14;
+  const shape=new THREE.Shape();
+  shape.moveTo(0, -h*0.04);
+  shape.bezierCurveTo(w*0.22, h*0.02, w*0.54, h*0.06, w*0.88, h*0.22);
+  shape.bezierCurveTo(w*1.08, h*0.35, w*1.12, h*0.55, w*0.72, h*0.74);
+  shape.bezierCurveTo(w*0.35, h*0.92, w*0.05, h*1.0, 0, h*1.02);
+  shape.bezierCurveTo(-w*0.05, h*1.0, -w*0.35, h*0.92, -w*0.72, h*0.74);
+  shape.bezierCurveTo(-w*1.12, h*0.55, -w*1.08, h*0.35, -w*0.88, h*0.22);
+  shape.bezierCurveTo(-w*0.54, h*0.06, -w*0.22, h*0.02, 0, -h*0.04);
+
+  const geo=new THREE.ShapeGeometry(shape, sw, sh);
+  const pa=geo.attributes.position;
+  const ca=new Float32Array(pa.count*3);
+
+  for(let i=0; i<pa.count; i++){
+    const x=pa.getX(i), y=pa.getY(i);
+    const t=(y/h+0.04)/1.06;
+    const rx=Math.abs(x/w);
+    let z=cu*Math.pow(t,1.8)*(1-rx*0.4)*(1-rx);
+    z-=crl*Math.pow(Math.max(0,t-0.45),2.2)*Math.pow(rx,2.5);
+    z+=0.012*Math.sin(rx*12)*t*(1-t*0.7);
+    pa.setZ(i,z);
+
+    // Color gradient: dark at base → tip color
+    const f=Math.pow(t, 0.6);
+    ca[i*3]=colorBase[0]+(colorTip[0]-colorBase[0])*f;
+    ca[i*3+1]=colorBase[1]+(colorTip[1]-colorBase[1])*f;
+    ca[i*3+2]=colorBase[2]+(colorTip[2]-colorBase[2])*f;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(ca, 3));
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function createRose(){
   const g=new THREE.Group();
+
+  // Deep burgundy base, bright crimson-red tip
+  const base=[0.35, 0.02, 0.05];   // dark wine
+  const tip=[0.82, 0.08, 0.18];    // vivid red
+  const matPetal=new THREE.MeshStandardMaterial({color:'#cc2244', roughness:.42, metalness:.02, vertexColors:true});
+
+  // Many layers for realistic bloom — inner bud to open outer petals
   const layers=[
-    {n:6,w:.1,h:.3,crv:.06,ang:.12,rd:.03,tilt:.15},{n:7,w:.14,h:.38,crv:.09,ang:.25,rd:.05,tilt:.35},
-    {n:8,w:.18,h:.44,crv:.12,ang:.42,rd:.07,tilt:.55},{n:9,w:.22,h:.48,crv:.14,ang:.6,rd:.09,tilt:.72},
-    {n:10,w:.25,h:.5,crv:.16,ang:.8,rd:.11,tilt:.9},
+    // inner bud — tiny tight petals
+    {n:5, w:.08, h:.22, cu:.10, crl:.01, ang:.08, tilt:.12},
+    {n:6, w:.11, h:.30, cu:.14, crl:.02, ang:.16, tilt:.22},
+    {n:7, w:.15, h:.38, cu:.18, crl:.03, ang:.28, tilt:.34},
+    // mid bloom
+    {n:8, w:.20, h:.48, cu:.24, crl:.06, ang:.42, tilt:.48},
+    {n:9, w:.25, h:.56, cu:.28, crl:.09, ang:.56, tilt:.62},
+    {n:11, w:.30, h:.64, cu:.32, crl:.12, ang:.72, tilt:.74},
+    // outer petals — wide open
+    {n:12, w:.36, h:.72, cu:.34, crl:.16, ang:.88, tilt:.84},
+    {n:14, w:.42, h:.80, cu:.35, crl:.20, ang:1.02, tilt:.92},
+    {n:15, w:.48, h:.88, cu:.36, crl:.25, ang:1.18, tilt:.98},
+    {n:16, w:.54, h:.95, cu:.36, crl:.30, ang:1.36, tilt:1.05},
   ];
-  layers.forEach(l=>{for(let i=0;i<l.n;i++){const geo=createPetalGeo(l.w,l.h,l.crv);const petal=new THREE.Mesh(geo,mat);const a=(i/l.n)*Math.PI*2;petal.position.y=-l.h*.1;petal.rotation.z=Math.cos(a)*l.tilt;petal.rotation.x=Math.sin(a)*l.tilt;petal.rotation.y=a;g.add(petal)}});
+
+  layers.forEach(l=>{
+    for(let i=0; i<l.n; i++){
+      const geo=createPetalGeoWithColors(l.w, l.h, l.cu, l.crl, base, tip);
+      const petal=new THREE.Mesh(geo, matPetal);
+      const a=(i/l.n)*Math.PI*2 + (Math.random()-.5)*0.25;
+      petal.position.y=-l.h*0.06;
+      petal.rotation.z=Math.cos(a)*l.tilt;
+      petal.rotation.x=Math.sin(a)*l.tilt;
+      petal.rotation.y=a;
+      g.add(petal);
+    }
+  });
+
   return g;
 }
 
 window.startRoseVR=function(){
   if(roseData)return;
   const container=document.getElementById('rosevr');
-  const size=Math.min(W,H)*.92;
+  const size=Math.min(W,H)*.94;
 
   const scene=new THREE.Scene();
   scene.background=new THREE.Color('#07060a');
-  scene.fog=new THREE.Fog('#07060a',3,14);
+  scene.fog=new THREE.Fog('#07060a',2.5,16);
 
-  const cam=new THREE.PerspectiveCamera(45,1,.1,40);
-  cam.position.set(0,1,5.5);cam.lookAt(0,.3,0);
+  const cam=new THREE.PerspectiveCamera(38,1,.1,50);
+  cam.position.set(0,.8,3.8);cam.lookAt(0,.2,0);
 
   const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
   renderer.setSize(size,size);renderer.setPixelRatio(Math.min(dpr,2));
   renderer.shadowMap.enabled=true;
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.2;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.3;
   container.appendChild(renderer.domElement);
 
-  // Lighting
-  scene.add(new THREE.AmbientLight('#332233',1.5));
-  const k=new THREE.DirectionalLight('#ffe8d0',4);k.position.set(3,5,5);scene.add(k);
-  const f=new THREE.DirectionalLight('#ff8899',1.5);f.position.set(-3,1,-2);scene.add(f);
-  const rim=new THREE.PointLight('#ff6644',8,8);rim.position.set(0,2,0);scene.add(rim);
+  // Beautiful rim + key lighting
+  scene.add(new THREE.AmbientLight('#2a1a22',1.8));
+  const key=new THREE.DirectionalLight('#ffe8d0',5.5);key.position.set(4,6,7);scene.add(key);
+  const fill=new THREE.DirectionalLight('#ff99aa',2.5);fill.position.set(-4,2,-3);scene.add(fill);
+  const rimLight=new THREE.DirectionalLight('#aaccff',2.2);rimLight.position.set(0,-1,5);scene.add(rimLight);
+  const topLight=new THREE.PointLight('#ffccaa',15,10);topLight.position.set(0,3.5,1);scene.add(topLight);
 
   // Controls
   const controls=new OrbitControls(cam,renderer.domElement);
-  controls.target.set(0,.3,0);controls.enableDamping=true;controls.dampingFactor=.08;
-  controls.autoRotate=true;controls.autoRotateSpeed=.8;
-  controls.minDistance=2.5;controls.maxDistance=9;controls.maxPolarAngle=Math.PI*.75;
+  controls.target.set(0,.15,0);controls.enableDamping=true;controls.dampingFactor=.06;
+  controls.autoRotate=true;controls.autoRotateSpeed=.6;
+  controls.minDistance=2.0;controls.maxDistance=10;controls.maxPolarAngle=Math.PI*.78;
   controls.update();
 
-  // Rose material
-  const roseMat=new THREE.MeshStandardMaterial({color:'#cc2244',roughness:.45,metalness:.05});
+  // Large centerpiece rose
+  const centerRose=createRose();
+  centerRose.scale.setScalar(2.6);
+  scene.add(centerRose);
 
-  // Bouquet
-  const bouquet=new THREE.Group();
-  const pos=[ [0,0,0],[.25,-.08,.2],[-.25,-.08,.15],[.15,-.12,-.25],[-.2,-.1,-.2],[.35,-.18,-.08],[-.35,-.18,.05] ];
-  pos.forEach(([px,py,pz])=>{const rose=createRose(roseMat);rose.position.set(px,py,pz);rose.scale.setScalar(.8+Math.random()*.35);rose.rotation.y=Math.random()*Math.PI*2;bouquet.add(rose)});
+  // 2 smaller accent roses
+  for(let si=0; si<2; si++){
+    const sr=createRose();
+    const sx=(si===0?1.1:-1.1), sz=(si===0?.4:-.3);
+    sr.position.set(sx, -.25, sz);
+    sr.scale.setScalar(1.5);
+    sr.rotation.y=si*Math.PI*.7;
+    scene.add(sr);
+  }
 
-  // Stems + leaves
-  const stemMat=new THREE.MeshStandardMaterial({color:'#2d5a1e',roughness:.6});
-  pos.forEach(([px,py,pz])=>{const s=new THREE.Mesh(new THREE.CylinderGeometry(.025,.035,1.2,8),stemMat);s.position.set(px,py-.7,pz);bouquet.add(s);const l=new THREE.Mesh(new THREE.SphereGeometry(.13,5,3),stemMat);l.scale.set(1,.08,.35);l.position.set(px+.1,py-.45,pz+.08);l.rotation.z=.5;bouquet.add(l)});
+  // Stems for accent roses
+  const stemMat=new THREE.MeshStandardMaterial({color:'#1d4a12',roughness:.5});
+  const stemPos=[[1.1,-.25,.4],[-1.1,-.25,-.3]];
+  stemPos.forEach(([sx,sy,sz])=>{
+    const st=new THREE.Mesh(new THREE.CylinderGeometry(.03,.05,1.8,12),stemMat);
+    st.position.set(sx,sy-1.1,sz);scene.add(st);
+  });
+  // Center rose stem
+  const cs=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,2.0,12),stemMat);
+  cs.position.set(0,-1.3,0);scene.add(cs);
 
-  // Wrapping
-  const wg=new THREE.CylinderGeometry(.55,.22,1.1,20,1,true);
-  const wm=new THREE.MeshStandardMaterial({color:'#f5f0eb',roughness:.7,side:THREE.DoubleSide});
-  const wrap=new THREE.Mesh(wg,wm);wrap.position.y=-.95;wrap.scale.set(1,.65,1);bouquet.add(wrap);
-  scene.add(bouquet);
-
-  // Text sprite
+  // Text sprite — floating above
   const tc=document.createElement('canvas');tc.width=512;tc.height=128;
   const tx=tc.getContext('2d');tx.fillStyle='#f5f0eb';tx.font='bold 44px "Songti SC","Noto Serif SC",serif';tx.textAlign='center';tx.fillText('你为玫瑰花费的时间',256,52);
   tx.fillText('才让她变得如此重要',256,100);
   const tt=new THREE.CanvasTexture(tc);tt.minFilter=THREE.LinearFilter;
-  const textSprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tt,transparent:true,opacity:.85}));
-  textSprite.position.set(0,1.5,0);textSprite.scale.set(2.4,.6,1);scene.add(textSprite);
+  const textSprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tt,transparent:true,opacity:.9}));
+  textSprite.position.set(0,2.2,0);textSprite.scale.set(2.0,.5,1);scene.add(textSprite);
 
-  // Firefly particles
-  const pc=100;const pg=new THREE.BufferGeometry();const pp=new Float32Array(pc*3);const pd=[];
-  for(let i=0;i<pc;i++){const a=Math.random()*Math.PI*2,rd=.8+Math.random()*3.5,ht=-.5+Math.random()*3;pp[i*3]=Math.cos(a)*rd;pp[i*3+1]=ht;pp[i*3+2]=Math.sin(a)*rd;pd.push({ba:a,br:rd,h:ht,sp:.3+Math.random()*.8,ph:Math.random()*Math.PI*2})}
+  // Fireflies
+  const pc=120;const pg=new THREE.BufferGeometry();const pp=new Float32Array(pc*3);const pd=[];
+  for(let i=0;i<pc;i++){const a=Math.random()*Math.PI*2,rd=.5+Math.random()*3.0,ht=-.8+Math.random()*3.2;pp[i*3]=Math.cos(a)*rd;pp[i*3+1]=ht;pp[i*3+2]=Math.sin(a)*rd;pd.push({ba:a,br:rd,h:ht,sp:.25+Math.random()*.9,ph:Math.random()*Math.PI*2})}
   pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
-  const pm=new THREE.PointsMaterial({color:'#ffd700',size:.025,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.65});
-  const pts=new THREE.Points(pg,pm);scene.add(pts);
+  const pmat=new THREE.PointsMaterial({color:'#ffd700',size:.03,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.7});
+  const pts=new THREE.Points(pg,pmat);scene.add(pts);
 
-  // Shadow
-  const sg=new THREE.PlaneGeometry(6,6);
-  const sm=new THREE.ShaderMaterial({uniforms:{uT:{value:0}},vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,fragmentShader:`varying vec2 vUv;uniform float uT;void main(){float d=length(vUv-.5)*2.;float a=smoothstep(1.,0.,d)*.1;gl_FragColor=vec4(1.,.84,0,a*(.7+.3*sin(uT*1.5)));}`,transparent:true,depthWrite:false});
-  const sp=new THREE.Mesh(sg,sm);sp.rotation.x=-Math.PI/2;sp.position.y=-1.7;scene.add(sp);
+  // Ground glow
+  const sg=new THREE.PlaneGeometry(8,8);
+  const sm=new THREE.ShaderMaterial({uniforms:{uT:{value:0}},vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,fragmentShader:`varying vec2 vUv;uniform float uT;void main(){float d=length(vUv-.5)*2.;float a=smoothstep(1.,0.,d)*.12;gl_FragColor=vec4(1.,.84,0,a*(.7+.3*sin(uT*1.5)));}`,transparent:true,depthWrite:false});
+  const sp=new THREE.Mesh(sg,sm);sp.rotation.x=-Math.PI/2;sp.position.y=-2.0;scene.add(sp);
 
-  roseData={scene,cam,renderer,controls,bouquet,textSprite,pts,pg,pp,pd,pc,sm,startTime:performance.now()};
+  roseData={scene,cam,renderer,controls,centerRose,textSprite,pts,pg,pp,pd,pc,sm,startTime:performance.now()};
 
-  // Auto advance
-  setTimeout(()=>{if(window.cur===9)window.go(9,10)},14000);
-
-  // Tap skip
-  const s9el=document.getElementById('s9');
-  s9el.addEventListener('click',function sk(){if(window.cur===9)window.go(9,10);s9el.removeEventListener('click',sk)});
+  setTimeout(()=>{if(window.cur===10)window.go(10,11)},16000);
+  const s10el=document.getElementById('s10');
+  s10el.addEventListener('click',function sk(){if(window.cur===10)window.go(10,11);s10el.removeEventListener('click',sk)});
 
   function anim(ts){
     if(!roseData)return;
@@ -451,12 +397,11 @@ window.startRoseVR=function(){
     const et=(ts-roseData.startTime)*.001;
     roseData.controls.update();
     roseData.sm.uniforms.uT.value=et;
-    roseData.textSprite.position.y=1.5+Math.sin(et*1.5)*.15;
+    roseData.textSprite.position.y=2.2+Math.sin(et*1.3)*.12;
 
     const pa=roseData.pg.attributes.position.array;
-    for(let i=0;i<roseData.pc;i++){const d=roseData.pd[i];d.ba+=d.sp*.004;const a=d.ba,rd=d.br+Math.sin(et*2+d.ph)*.3;d.h+=Math.sin(et*2.5+d.ph)*.002;if(d.h>2.5)d.h=-.5;if(d.h<-.5)d.h=2.5;pa[i*3]=Math.cos(a)*rd;pa[i*3+1]=d.h;pa[i*3+2]=Math.sin(a)*rd}
+    for(let i=0;i<roseData.pc;i++){const d=roseData.pd[i];d.ba+=d.sp*.003;const a=d.ba,rd=d.br+Math.sin(et*2+d.ph)*.25;d.h+=Math.sin(et*2.5+d.ph)*.0015;if(d.h>2.5)d.h=-.8;if(d.h<-.8)d.h=2.5;pa[i*3]=Math.cos(a)*rd;pa[i*3+1]=d.h;pa[i*3+2]=Math.sin(a)*rd}
     roseData.pg.attributes.position.needsUpdate=true;
-
     roseData.renderer.render(roseData.scene,roseData.cam);
   }
   roseData.fid=requestAnimationFrame(anim);
@@ -477,7 +422,7 @@ window.stopRoseVR=function(){
 window.answer=function(){
   spawnFloatEls(120);
   for(let i=0;i<140;i++){const cf=document.createElement('div');cf.style.cssText=['position:fixed;pointer-events:none;z-index:30','width:'+(3+Math.random()*12)+'px','height:'+(3+Math.random()*12)+'px','background:'+['#c9a74b','#e8d48b','#d4a0a0','#ff6b8a','#f5f0eb','#ffb8c6','#b8d0e8'][Math.floor(Math.random()*7)],'border-radius:'+(Math.random()>.5?'50%':'2px'),'left:'+(15+Math.random()*70)+'vw','top:'+(15+Math.random()*60)+'vh','animation:cfFall '+(2+Math.random()*4)+'s ease-in forwards','animation-delay:'+Math.random()*.8+'s','--cx:'+(Math.random()-.5)*200+'px','--cy:'+(Math.random()-.5)*200+'px','--ex:'+(Math.random()-.5)*500+'px','--ey:'+(-50-Math.random()*450)+'px','--cr:'+Math.random()*360+'deg','--er:'+Math.random()*720+'deg'].join(';');document.body.appendChild(cf);setTimeout(()=>cf.remove(),4500)}
-  setTimeout(()=>go(10,11),1400);
+  setTimeout(()=>go(11,12),1400);
 };
 const cs=document.createElement('style');cs.textContent='@keyframes cfFall{0%{opacity:1;transform:translate(0,0) rotate(0deg) scale(1)}20%{opacity:1;transform:translate(var(--cx),var(--cy)) rotate(var(--cr)) scale(1.2)}100%{opacity:0;transform:translate(var(--ex),var(--ey)) rotate(var(--er)) scale(.3)}}';document.head.appendChild(cs);
 
@@ -490,32 +435,40 @@ function startFireworks(){
   const rc=()=>FC[Math.floor(Math.random()*FC.length)];
   const rockets=[],sparks=[],secondStage=[];
   const st=performance.now();
-
-  // Castle silhouette
-  function drawCastle(){
-    const cx=W/2,by=H,sc=Math.min(W*.7,H*.55);
-    const gx=cx-sc*.5,gy=by-sc*.7;
-    fwX.fillStyle='rgba(10,8,12,.85)';
-    // Main tower
-    fwX.beginPath();fwX.moveTo(gx+sc*.35,gy+sc*.1);fwX.lineTo(gx+sc*.38,gy-sc*.15);fwX.lineTo(gx+sc*.5,gy);fwX.lineTo(gx+sc*.62,gy-sc*.15);fwX.lineTo(gx+sc*.65,gy+sc*.1);fwX.closePath();fwX.fill();
-    fwX.fillRect(gx+sc*.38,gy+sc*.1,sc*.24,by-gy-sc*.1);
-    // Left tower
-    fwX.beginPath();fwX.moveTo(gx+sc*.08,gy+sc*.35);fwX.lineTo(gx+sc*.1,gy+sc*.15);fwX.lineTo(gx+sc*.2,gy+sc*.35);fwX.lineTo(gx+sc*.22,gy+sc*.55);fwX.closePath();fwX.fill();
-    fwX.fillRect(gx+sc*.1,gy+sc*.35,sc*.1,by-gy-sc*.35);
-    // Right tower
-    fwX.beginPath();fwX.moveTo(gx+sc*.68,gy+sc*.55);fwX.lineTo(gx+sc*.7,gy+sc*.35);fwX.lineTo(gx+sc*.8,gy+sc*.15);fwX.lineTo(gx+sc*.82,gy+sc*.35);fwX.closePath();fwX.fill();
-    fwX.fillRect(gx+sc*.7,gy+sc*.35,sc*.1,by-gy-sc*.35);
-    // Connecting walls
-    fwX.fillRect(gx+sc*.2,gy+sc*.55,sc*.18,by-gy-sc*.55);
-    fwX.fillRect(gx+sc*.5,gy+sc*.55,sc*.18,by-gy-sc*.55);
-    // Gate
-    fwX.beginPath();fwX.arc(gx+sc*.5,gy+sc*.7,sc*.08,Math.PI,0);fwX.fillStyle='rgba(7,6,10,.5)';fwX.fill();
-    // Windows (tiny lit)
-    fwX.fillStyle='rgba(255,220,180,.15)';
-    fwX.fillRect(gx+sc*.45,gy+sc*.25,sc*.03,sc*.04);
-    fwX.fillRect(gx+sc*.55,gy+sc*.3,sc*.03,sc*.04);
-    fwX.fillRect(gx+sc*.13,gy+sc*.45,sc*.025,sc*.035);
-    fwX.fillRect(gx+sc*.76,gy+sc*.45,sc*.025,sc*.035);
+	  // Colored Disney-style castle — bottom 1/4 of screen
+	  function drawCastle(){
+	    const cx=W/2, by=H, cw=Math.min(W*.78, H*.42), ch=H*.28;
+	    const gx=cx-cw*.5, gy=by-ch;
+	    // Sky glow behind castle
+	    (function(ctx){const g=ctx.createRadialGradient(cx*dpr,gy*dpr,0,cx*dpr,gy*dpr,ch*dpr*2);g.addColorStop(0,'rgba(30,20,50,.25)');g.addColorStop(.5,'rgba(20,15,40,.12)');g.addColorStop(1,'rgba(7,6,10,0)');ctx.fillStyle=g;ctx.fillRect(gx*dpr,0,cw*dpr,by*dpr)})(fwX);
+	    function tower(tx,ty,tw,th,rh,rc,wc){
+	      fwX.fillStyle=rc;
+	      fwX.beginPath();fwX.moveTo((tx-tw*.08)*dpr,ty*dpr);fwX.lineTo((tx+tw*.5)*dpr,(ty-rh)*dpr);fwX.lineTo((tx+tw+tw*.08)*dpr,ty*dpr);fwX.closePath();fwX.fill();
+	      fwX.fillRect((tx-tw*.02)*dpr,(ty-rh*.25)*dpr,(tw+tw*.04)*dpr,rh*.28*dpr);
+	      fwX.fillStyle=wc;fwX.fillRect(tx*dpr,ty*dpr,tw*dpr,(by-ty)*dpr);
+	      fwX.fillStyle=rc;
+	      for(let cx2=tx;cx2<tx+tw-tw*.12;cx2+=tw*.12)fwX.fillRect(cx2*dpr,(ty-th*.03)*dpr,tw*.08*dpr,th*.06*dpr);
+	    }
+	    const rb='#4a7eb5',rd='#2d5a8a',wc2='#eadcc8',wd='#d4c4a8',gld='#c9a74b',pr='#c47a9a';
+	    const mtw=cw*.18,mtx=cx-mtw*.5,mty=gy+ch*.08,mth=ch*.62;
+	    tower(mtx,mty,mtw,mth,ch*.45,rb,wc2);
+	    fwX.fillStyle=gld;fwX.beginPath();fwX.moveTo((cx-cw*.01)*dpr,mty*dpr);fwX.lineTo(cx*dpr,(mty-ch*.55)*dpr);fwX.lineTo((cx+cw*.01)*dpr,mty*dpr);fwX.closePath();fwX.fill();
+	    fwX.fillStyle='#e8a0b0';fwX.beginPath();fwX.moveTo(cx*dpr,(mty-ch*.52)*dpr);fwX.lineTo((cx+cw*.04)*dpr,(mty-ch*.47)*dpr);fwX.lineTo(cx*dpr,(mty-ch*.44)*dpr);fwX.closePath();fwX.fill();
+	    const ltw=cw*.14,ltx=gx+cw*.05,lty=gy+ch*.32,lth=ch*.4;
+	    tower(ltx,lty,ltw,lth,ch*.3,pr,wd);
+	    tower(gx+cw*.79,gy+ch*.32,cw*.14,ch*.4,ch*.3,pr,wd);
+	    tower(gx+cw*.02,gy+ch*.48,cw*.08,ch*.25,ch*.18,rd,wd);
+	    tower(gx+cw*.88,gy+ch*.48,cw*.08,ch*.25,ch*.18,rd,wd);
+	    fwX.fillStyle=wc2;fwX.fillRect((ltx+ltw)*dpr,(gy+ch*.48)*dpr,(mtx-ltx-ltw)*dpr,(by-gy-ch*.48)*dpr);
+	    fwX.fillRect((mtx+mtw)*dpr,(gy+ch*.48)*dpr,(gx+cw*.79-mtx-mtw)*dpr,(by-gy-ch*.48)*dpr);
+	    fwX.fillStyle='#1a1020';fwX.beginPath();fwX.arc(cx*dpr,(gy+ch*.62)*dpr,cw*.07*dpr,Math.PI,0);fwX.fill();
+	    fwX.fillStyle=gld;fwX.fillRect((cx-cw*.07)*dpr,(gy+ch*.62)*dpr,cw*.14*dpr,cw*.015*dpr);
+	    fwX.fillStyle='rgba(255,220,160,.55)';const ww=cw*.022,wh=ch*.05;
+	    for(let wy=mty+ch*.08;wy<mty+mth-ch*.08;wy+=ch*.12){fwX.fillRect((cx-ww*1.4)*dpr,wy*dpr,ww*dpr,wh*dpr);fwX.fillRect((cx+ww*.4)*dpr,wy*dpr,ww*dpr,wh*dpr)}
+	    for(let wy=lty+ch*.08;wy<lty+lth-ch*.08;wy+=ch*.14)fwX.fillRect((ltx+ltw*.35)*dpr,wy*dpr,ww*dpr,wh*dpr);
+	    for(let wy=gy+ch*.4;wy<gy+ch*.4+lth-ch*.08;wy+=ch*.14)fwX.fillRect((gx+cw*.79+cw*.14*.35)*dpr,wy*dpr,ww*dpr,wh*dpr);
+	    fwX.fillStyle='rgba(255,200,180,.5)';fwX.beginPath();fwX.arc(cx*dpr,(gy+ch*.38)*dpr,cw*.025*dpr,0,Math.PI*2);fwX.fill();
+	  }
   }
 
   function launch(x,tY,color,speed){rockets.push({x,y:H,targetY:tY,speed:speed||(4+Math.random()*9),color,trail:[]})}
@@ -552,14 +505,20 @@ function startFireworks(){
 // ============================================================
 window.addEventListener('load',()=>{
   setTimeout(()=>document.getElementById('loader').classList.add('hide'),600);
-  setTimeout(()=>go(0,1),1200);   // Envelope
-  setTimeout(()=>go(1,2),5200);   // Lyric 1
-  setTimeout(()=>go(2,3),9000);   // Lyric 2
-  setTimeout(()=>go(3,4),12800);  // Lyric 3
-  setTimeout(()=>go(4,5),16600);  // Lyric 4
-  setTimeout(()=>go(5,6),20400);  // Lyric 5
-  setTimeout(()=>go(6,7),24200);  // 我爱你
-  setTimeout(()=>go(7,8),28400);  // Ring 3D
+  setTimeout(()=>go(0,1),1200);   // Envelope opens
+  setTimeout(()=>go(1,2),4800);   // dear xiaochao
+  setTimeout(()=>go(2,3),8200);   // Lyric 1
+  setTimeout(()=>go(3,4),11800);  // Lyric 2
+  setTimeout(()=>go(4,5),15400);  // Lyric 3
+  setTimeout(()=>go(5,6),19000);  // Lyric 4
+  setTimeout(()=>go(6,7),22600);  // Lyric 5
+  setTimeout(()=>go(7,8),26200);  // I love you
+  setTimeout(()=>go(8,9),30400);  // Ring emoji
+  // S9 ring tap-to-skip
+  document.getElementById('s9').addEventListener('click',function sk(){if(cur===9)go(9,10);document.getElementById('s9').removeEventListener('click',sk)});
+  // S9 ring auto-advances to S10 after 6s (in go function)
+  // S10 rose VR auto-advances to S11 after 14s
+  // S11 waits for click to S12 fireworks
   // S8 ring auto-advances → S9 after 10s
   // S9 rose VR auto-advances → S10 after 14s
   // S10 waits for click → S11 fireworks
