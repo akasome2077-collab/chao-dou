@@ -28,9 +28,11 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 .scene .inner{text-align:center;padding:32px}
 
 /* Text pages (S1-S6) */
-.txt-line{font-size:clamp(1.3rem,3.2vw,1.9rem);color:rgba(245,240,235,.78);font-weight:300;letter-spacing:clamp(3px,1.5vw,8px);line-height:2.3;animation:txtIn 1.2s .3s cubic-bezier(.22,.61,.36,1) both}
-.txt-line b{color:var(--rose);font-weight:500}
-@keyframes txtIn{from{opacity:0;filter:blur(6px);transform:translateY(20px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+/* Lyrics pages — staggered line-by-line reveal */
+.lyric-wrap{text-align:center}
+.lyric-stagger{display:block;font-size:clamp(1.2rem,3vw,1.8rem);color:rgba(245,240,235,.82);font-weight:300;letter-spacing:clamp(2px,1.2vw,6px);line-height:2.4;opacity:0;animation:lyricUp .9s var(--d,.2s) cubic-bezier(.22,.61,.36,1) forwards}
+.lyric-stagger b{color:var(--rose);font-weight:500}
+@keyframes lyricUp{from{opacity:0;filter:blur(4px);transform:translateY(36px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
 
 .s1-text{font-size:clamp(3.5rem,10vw,7rem);font-weight:700;color:#f5f0eb;letter-spacing:clamp(12px,4vw,28px);animation:txtIn 1.4s .3s cubic-bezier(.22,.61,.36,1) both}
 
@@ -76,30 +78,42 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 <!-- S1: Envelope -->
 <div class="scene" id="s1"><div class="inner"><div class="env-wrap"><div class="env-body" id="envBody"><div class="env-flap" id="envFlap"></div><div class="env-msg">亲爱的小chao</div></div></div></div></div>
 
-<!-- S2: Name -->
-<div class="scene" id="s2"><div class="inner"><div class="s1-text">曹 璐</div></div></div>
+<!-- S2-S6: 5 lyric pages — staggered reveal -->
+<div class="scene" id="s2"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">记得那天 太阳压着平原</span>
+  <span class="lyric-stagger" style="--d:.9s">风慢慢吹 没有人掉眼泪</span>
+</div></div></div>
+<div class="scene" id="s3"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">一切好美 好到我可以不用说</span>
+  <span class="lyric-stagger" style="--d:.9s">金色的侧脸 踩着全白球鞋</span>
+</div></div></div>
+<div class="scene" id="s4"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">风继续吹 世界继续作业</span>
+  <span class="lyric-stagger" style="--d:.9s">那么确定 我知道那就是<b>你</b></span>
+</div></div></div>
+<div class="scene" id="s5"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">那一天你走进了我的生命</span>
+  <span class="lyric-stagger" style="--d:.9s">谢谢你 成为了我的<b>几分之几</b></span>
+</div></div></div>
+<div class="scene" id="s6"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">闭上眼睛也能看见你</span>
+  <span class="lyric-stagger" style="--d:.9s">晴朗的<b>南方</b></span>
+</div></div></div>
 
-<!-- S3-S7: 5 text pages -->
-<div class="scene" id="s3"><div class="inner"><div class="txt-line">你是我的<b>几分之几</b><br>也是我的<b>百分之百</b></div></div></div>
-<div class="scene" id="s4"><div class="inner"><div class="txt-line">在这七十亿人海里<br>我只<b>看见</b>你</div></div></div>
-<div class="scene" id="s5"><div class="inner"><div class="txt-line">如果爱是道<b>数学题</b><br>你就是<b>唯一的解</b></div></div></div>
-<div class="scene" id="s6"><div class="inner"><div class="txt-line">遇见你之前<br>我不过是残缺的<b>几分之几</b></div></div></div>
-<div class="scene" id="s7"><div class="inner"><div class="txt-line">从那天起<br>我成了完整的<b>百分之百</b></div></div></div>
+<!-- S7: 我爱你 -->
+<div class="scene" id="s7"><div class="inner"><div class="ily-text">我 爱 你</div></div></div>
 
-<!-- S8: 我爱你 -->
-<div class="scene" id="s8"><div class="inner"><div class="ily-text">我 爱 你</div></div></div>
+<!-- S8: 3D Ring -->
+<div class="scene" id="s8"><div id="ring3d"></div></div>
 
-<!-- S9: 3D Ring -->
-<div class="scene" id="s9"><div id="ring3d"></div></div>
+<!-- S9: 3D Rose VR -->
+<div class="scene" id="s9"><div id="rosevr"></div></div>
 
-<!-- S10: 3D Rose VR -->
-<div class="scene" id="s10"><div id="rosevr"></div></div>
+<!-- S10: Proposal -->
+<div class="scene" id="s10"><div class="inner"><div class="s9-q">嫁给我，好吗？</div><div class="s9-btns"><button class="s9-btn" onclick="answer()">💍 我愿意</button><button class="s9-btn" onclick="answer()">💖 非常愿意</button></div></div></div>
 
-<!-- S11: Proposal -->
-<div class="scene" id="s11"><div class="inner"><div class="s9-q">嫁给我，好吗？</div><div class="s9-btns"><button class="s9-btn" onclick="answer()">💍 我愿意</button><button class="s9-btn" onclick="answer()">💖 非常愿意</button></div></div></div>
-
-<!-- S12: Fireworks -->
-<div class="scene" id="s12"><div class="inner"><div class="fw-title">曹璐  💍  我爱你</div><div class="fw-sub">—— 来自永远爱你的 zz</div></div></div>
+<!-- S11: Fireworks -->
+<div class="scene" id="s11"><div class="inner"><div class="fw-title">曹璐  💍  我爱你</div><div class="fw-sub">—— 来自永远爱你的 zz</div></div></div>
 
 <script>
 // ============================================================
@@ -134,7 +148,7 @@ requestAnimationFrame(bgLoop)})();
 // ============================================================
 var cur=0;
 const scenes={};
-for(let i=1;i<=12;i++)scenes[i]=document.getElementById('s'+i);
+for(let i=1;i<=11;i++)scenes[i]=document.getElementById('s'+i);
 const cine=document.getElementById('cine');
 
 function go(from,to){
@@ -143,11 +157,11 @@ function go(from,to){
   scenes[to].classList.add('active');
   cur=to;
   if(to===1){setTimeout(()=>document.getElementById('envFlap').classList.add('open'),400)}
-  if(to===8)spawnFloatEls(60);
-  if(to===9)startRing3D();
-  if(to===10){stopRing3D();startRoseVR();}
-  if(to===11)spawnFloatEls(40);
-  if(to===12){stopRoseVR();startFireworks()}
+  if(to===7)spawnFloatEls(60);
+  if(to===8)startRing3D();
+  if(to===9){stopRing3D();startRoseVR();}
+  if(to===10)spawnFloatEls(40);
+  if(to===11){stopRoseVR();startFireworks()}
 }
 
 function spawnFloatEls(count){
@@ -277,11 +291,11 @@ window.startRing3D=function(){
   ringData={scene,cam,renderer,ringGroup,band,diamond,diamondMat,sparkPoints,sparkGeo,sparkPos,sparkData,sparkCount,glowMat,top,startTime:performance.now()};
 
   // Auto advance
-  setTimeout(()=>{if(window.cur===9)window.go(9,10)},10000);
+  setTimeout(()=>{if(window.cur===8)window.go(8,9)},10000);
 
   // Tap to skip
-  const s9el=document.getElementById('s9');
-  s9el.addEventListener('click',function sk(){if(window.cur===9)window.go(9,10);s9el.removeEventListener('click',sk)});
+  const s8el=document.getElementById('s8');
+  s8el.addEventListener('click',function sk(){if(window.cur===8)window.go(8,9);s8el.removeEventListener('click',sk)});
 
   // Mouse/touch rotate
   let tRY=.25;
@@ -425,11 +439,11 @@ window.startRoseVR=function(){
   roseData={scene,cam,renderer,controls,bouquet,textSprite,pts,pg,pp,pd,pc,sm,startTime:performance.now()};
 
   // Auto advance
-  setTimeout(()=>{if(window.cur===10)window.go(10,11)},14000);
+  setTimeout(()=>{if(window.cur===9)window.go(9,10)},14000);
 
   // Tap skip
-  const s10el=document.getElementById('s10');
-  s10el.addEventListener('click',function sk(){if(window.cur===10)window.go(10,11);s10el.removeEventListener('click',sk)});
+  const s9el=document.getElementById('s9');
+  s9el.addEventListener('click',function sk(){if(window.cur===9)window.go(9,10);s9el.removeEventListener('click',sk)});
 
   function anim(ts){
     if(!roseData)return;
@@ -463,7 +477,7 @@ window.stopRoseVR=function(){
 window.answer=function(){
   spawnFloatEls(120);
   for(let i=0;i<140;i++){const cf=document.createElement('div');cf.style.cssText=['position:fixed;pointer-events:none;z-index:30','width:'+(3+Math.random()*12)+'px','height:'+(3+Math.random()*12)+'px','background:'+['#c9a74b','#e8d48b','#d4a0a0','#ff6b8a','#f5f0eb','#ffb8c6','#b8d0e8'][Math.floor(Math.random()*7)],'border-radius:'+(Math.random()>.5?'50%':'2px'),'left:'+(15+Math.random()*70)+'vw','top:'+(15+Math.random()*60)+'vh','animation:cfFall '+(2+Math.random()*4)+'s ease-in forwards','animation-delay:'+Math.random()*.8+'s','--cx:'+(Math.random()-.5)*200+'px','--cy:'+(Math.random()-.5)*200+'px','--ex:'+(Math.random()-.5)*500+'px','--ey:'+(-50-Math.random()*450)+'px','--cr:'+Math.random()*360+'deg','--er:'+Math.random()*720+'deg'].join(';');document.body.appendChild(cf);setTimeout(()=>cf.remove(),4500)}
-  setTimeout(()=>go(11,12),1400);
+  setTimeout(()=>go(10,11),1400);
 };
 const cs=document.createElement('style');cs.textContent='@keyframes cfFall{0%{opacity:1;transform:translate(0,0) rotate(0deg) scale(1)}20%{opacity:1;transform:translate(var(--cx),var(--cy)) rotate(var(--cr)) scale(1.2)}100%{opacity:0;transform:translate(var(--ex),var(--ey)) rotate(var(--er)) scale(.3)}}';document.head.appendChild(cs);
 
@@ -539,17 +553,16 @@ function startFireworks(){
 window.addEventListener('load',()=>{
   setTimeout(()=>document.getElementById('loader').classList.add('hide'),600);
   setTimeout(()=>go(0,1),1200);   // Envelope
-  setTimeout(()=>go(1,2),5200);   // Name
-  setTimeout(()=>go(2,3),8800);   // Text 1
-  setTimeout(()=>go(3,4),12400);  // Text 2
-  setTimeout(()=>go(4,5),16000);  // Text 3
-  setTimeout(()=>go(5,6),19600);  // Text 4
-  setTimeout(()=>go(6,7),23200);  // Text 5
-  setTimeout(()=>go(7,8),26800);  // 我爱你
-  setTimeout(()=>go(8,9),31000);  // Ring 3D
-  // S9 ring auto-advances → S10 after 10s
-  // S10 rose VR auto-advances → S11 after 14s
-  // S11 waits for click → S12 fireworks
+  setTimeout(()=>go(1,2),5200);   // Lyric 1
+  setTimeout(()=>go(2,3),9000);   // Lyric 2
+  setTimeout(()=>go(3,4),12800);  // Lyric 3
+  setTimeout(()=>go(4,5),16600);  // Lyric 4
+  setTimeout(()=>go(5,6),20400);  // Lyric 5
+  setTimeout(()=>go(6,7),24200);  // 我爱你
+  setTimeout(()=>go(7,8),28400);  // Ring 3D
+  // S8 ring auto-advances → S9 after 10s
+  // S9 rose VR auto-advances → S10 after 14s
+  // S10 waits for click → S11 fireworks
 });
 </script>
 </body>
