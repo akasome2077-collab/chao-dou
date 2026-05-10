@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+*.log
+.imessage_bot_*
+imessage_bot.py
+heart.html
+__pycache__/
+*.pyc
