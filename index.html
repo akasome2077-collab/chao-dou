@@ -68,7 +68,7 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 
 <div id="loader"><div class="diamond"></div></div>
 <div class="cine" id="cine"></div>
-<iframe id="music-frame" src="https://music.163.com/outchain/player?type=2&id=530995517&auto=1&height=66" allow="autoplay" style="position:fixed;bottom:-200px;left:0;width:100%;height:86px;z-index:60;border:none;transition:bottom .5s"></iframe>
+<audio id="bgm" src="music.m4a" loop preload="auto"></audio>
 <button id="music-btn" onclick="toggleMusic()" style="position:fixed;bottom:20px;right:20px;z-index:61;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(255,45,85,.5);background:rgba(255,45,85,.12);color:#fff;font-size:1.2rem;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;transition:all .3s">🎵</button>
 
 <canvas id="bg"></canvas>
@@ -79,7 +79,7 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 <div class="scene" id="s1"><div class="inner"><div class="s1-text">曹 璐</div></div></div>
 
 <!-- S2: Romantic line -->
-<div class="scene" id="s2"><div class="inner"><div class="s2-text">我一直在找一个<br>最合适的时刻<br>对你说那句<br>藏了很久的<b>话</b></div></div></div>
+<div class="scene" id="s2"><div class="inner"><div class="s2-text">你是我的几分之几<br>也是我的<b>百分之百</b><br>从遇见你的那天起<br>我就知道是<b>你</b></div></div></div>
 
 <!-- S3: I love you -->
 <div class="scene" id="s3"><div class="inner"><div class="s3-text">我 爱 你</div></div></div>
@@ -648,22 +648,35 @@ function startFireworks() {
 // ============================================================
 // MUSIC CONTROL
 // ============================================================
+const bgm = document.getElementById('bgm');
+const musicBtn = document.getElementById('music-btn');
 let musicOn = true;
 
-window.toggleMusic = function() {
-  const frame = document.getElementById('music-frame');
-  const btn = document.getElementById('music-btn');
-  musicOn = !musicOn;
-  frame.style.bottom = musicOn ? '0' : '-200px';
-  btn.style.borderColor = musicOn ? 'rgba(255,45,85,.5)' : 'rgba(255,255,255,.25)';
-  btn.style.background = musicOn ? 'rgba(255,45,85,.12)' : 'rgba(0,0,0,.5)';
-  btn.innerHTML = musicOn ? '🎵' : '🔇';
-};
+// Try autoplay immediately
+bgm.volume = 0.6;
+bgm.play().catch(() => {
+  // Autoplay blocked — play on first user interaction
+  musicOn = false;
+  musicBtn.style.borderColor = 'rgba(255,255,255,.25)';
+  musicBtn.style.background = 'rgba(0,0,0,.5)';
+  musicBtn.innerHTML = '🔇';
+  document.addEventListener('click', function resume() {
+    bgm.play(); musicOn = true;
+    musicBtn.style.borderColor = 'rgba(255,45,85,.5)';
+    musicBtn.style.background = 'rgba(255,45,85,.12)';
+    musicBtn.innerHTML = '🎵';
+    document.removeEventListener('click', resume);
+  }, { once: true });
+});
 
-// Try to show player after a short delay (some browsers need this for auto=1)
-setTimeout(function() {
-  document.getElementById('music-frame').style.bottom = '0';
-}, 1500);
+window.toggleMusic = function() {
+  musicOn = !musicOn;
+  if (musicOn) { bgm.play(); }
+  else { bgm.pause(); }
+  musicBtn.style.borderColor = musicOn ? 'rgba(255,45,85,.5)' : 'rgba(255,255,255,.25)';
+  musicBtn.style.background = musicOn ? 'rgba(255,45,85,.12)' : 'rgba(0,0,0,.5)';
+  musicBtn.innerHTML = musicOn ? '🎵' : '🔇';
+};
 
 // ============================================================
 // START
