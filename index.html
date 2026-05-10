@@ -469,7 +469,6 @@ function startFireworks(){
 	    for(let wy=gy+ch*.4;wy<gy+ch*.4+lth-ch*.08;wy+=ch*.14)fwX.fillRect((gx+cw*.79+cw*.14*.35)*dpr,wy*dpr,ww*dpr,wh*dpr);
 	    fwX.fillStyle='rgba(255,200,180,.5)';fwX.beginPath();fwX.arc(cx*dpr,(gy+ch*.38)*dpr,cw*.025*dpr,0,Math.PI*2);fwX.fill();
 	  }
-  }
 
   function launch(x,tY,color,speed){rockets.push({x,y:H,targetY:tY,speed:speed||(4+Math.random()*9),color,trail:[]})}
   function burst(x,y,color,type,size=1){
