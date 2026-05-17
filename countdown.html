@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>倒计时</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0c0c1d 0%, #1a1a3e 50%, #0d0d2b 100%);
+    display: flex; justify-content: center; align-items: center;
+    color: #fff; user-select: none;
+    overflow: hidden;
+  }
+
+  /* 背景星星 */
+  .stars {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+  .star {
+    position: absolute; background: #fff; border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite;
+    animation-delay: var(--delay); opacity: 0.3;
+  }
+  @keyframes twinkle {
+    50% { opacity: 0.8; transform: scale(1.5); }
+  }
+
+  .container {
+    position: relative; z-index: 1; text-align: center; padding: 20px;
+  }
+
+  h1 {
+    font-size: 28px; font-weight: 300; color: #aaa; margin-bottom: 8px;
+    letter-spacing: 4px;
+  }
+  .title-date {
+    font-size: 18px; color: #666; margin-bottom: 40px; letter-spacing: 2px;
+  }
+
+  .cards {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 24px 20px; min-width: 100px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.2);
+  }
+  .card .num {
+    font-size: 56px; font-weight: 700; letter-spacing: 2px;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(180deg, #fff 0%, #aac 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+  .card .label {
+    font-size: 13px; color: #666; margin-top: 6px; letter-spacing: 2px;
+  }
+
+  .divider {
+    font-size: 48px; color: rgba(255,255,255,0.15); font-weight: 300;
+    align-self: center; margin-top: -20px;
+  }
+
+  .date-picker {
+    margin-bottom: 24px;
+  }
+  .date-picker input {
+    padding: 10px 16px; font-size: 15px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px; color: #fff; outline: none;
+    transition: border-color 0.2s;
+  }
+  .date-picker input:focus { border-color: rgba(120,140,255,0.6); }
+  .date-picker label { margin-right: 8px; color: #888; font-size: 14px; }
+
+  .presets {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+  }
+  .presets button {
+    padding: 8px 18px; font-size: 13px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; color: #aaa; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .presets button:hover, .presets button.active {
+    background: rgba(120,140,255,0.2); border-color: rgba(120,140,255,0.4); color: #fff;
+  }
+
+  .finished-msg {
+    display: none; margin-top: 30px; font-size: 22px; color: #f66;
+    animation: fadeIn 0.5s;
+  }
+  .finished-msg.show { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="container">
+  <h1>倒 计 时</h1>
+  <div class="title-date" id="targetLabel">— 请选择目标日期 —</div>
+
+  <div class="cards">
+    <div class="card"><div class="num" id="days">00</div><div class="label">天</div></div>
+    <span class="divider">:</span>
+    <div class="card"><div class="num" id="hours">00</div><div class="label">时</div></div>
+    <span class="divider">:</span>
+    <div class="card"><div class="num" id="mins">00</div><div class="label">分</div></div>
+    <span class="divider">:</span>
+    <div class="card"><div class="num" id="secs">00</div><div class="label">秒</div></div>
+  </div>
+
+  <div class="date-picker">
+    <label for="targetDate">目标日期</label>
+    <input type="datetime-local" id="targetDate">
+  </div>
+
+  <div class="presets">
+    <button data-label="元旦 2027" data-date="2027-01-01T00:00">元旦</button>
+    <button data-label="春节 2027" data-date="2027-01-29T00:00">春节</button>
+    <button data-label="除夕 2027" data-date="2027-01-28T00:00">除夕</button>
+    <button data-label="情人节 2027" data-date="2027-02-14T00:00">情人节</button>
+    <button data-label="自定义" class="active">自定义</button>
+  </div>
+
+  <div class="finished-msg" id="finishedMsg">时间到！</div>
+</div>
+
+<script>
+  // 生成背景星星
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2.5 + 1;
+    star.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%; left:${Math.random()*100}%;
+      --dur:${Math.random()*3+2}s; --delay:${Math.random()*4}s;
+    `;
+    starsEl.appendChild(star);
+  }
+
+  const daysEl = document.getElementById('days');
+  const hoursEl = document.getElementById('hours');
+  const minsEl = document.getElementById('mins');
+  const secsEl = document.getElementById('secs');
+  const targetLabel = document.getElementById('targetLabel');
+  const targetDateInput = document.getElementById('targetDate');
+  const finishedMsg = document.getElementById('finishedMsg');
+  const presetBtns = document.querySelectorAll('.presets button');
+
+  let target = null;
+  let timer = null;
+  let activePreset = null;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function update() {
+    if (!target) {
+      daysEl.textContent = '--';
+      hoursEl.textContent = '--';
+      minsEl.textContent = '--';
+      secsEl.textContent = '--';
+      return;
+    }
+
+    const now = new Date().getTime();
+    const diff = target.getTime() - now;
+
+    if (diff <= 0) {
+      daysEl.textContent = '00';
+      hoursEl.textContent = '00';
+      minsEl.textContent = '00';
+      secsEl.textContent = '00';
+      finishedMsg.classList.add('show');
+      return;
+    }
+
+    finishedMsg.classList.remove('show');
+    const totalSecs = Math.floor(diff / 1000);
+    daysEl.textContent = pad(Math.floor(totalSecs / 86400));
+    hoursEl.textContent = pad(Math.floor((totalSecs % 86400) / 3600));
+    minsEl.textContent = pad(Math.floor((totalSecs % 3600) / 60));
+    secsEl.textContent = pad(totalSecs % 60);
+  }
+
+  function setTarget(date, label) {
+    target = date;
+    targetDateInput.value = '';
+    if (label) {
+      targetLabel.textContent = '距离 ' + label;
+      targetDateInput.value = date.toISOString().slice(0, 16);
+    }
+    finishedMsg.classList.remove('show');
+    update();
+    clearInterval(timer);
+    timer = setInterval(update, 200);
+  }
+
+  targetDateInput.addEventListener('change', () => {
+    const val = targetDateInput.value;
+    if (!val) return;
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return;
+    setTarget(d, d.toLocaleDateString('zh-CN', { year:'numeric', month:'long', day:'numeric' }));
+    presetBtns.forEach(b => b.classList.remove('active'));
+    document.querySelector('[data-label="自定义"]').classList.add('active');
+  });
+
+  presetBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (btn.dataset.date) {
+        setTarget(new Date(btn.dataset.date), btn.dataset.label);
+      } else {
+        // 自定义按钮 — 聚焦到日期选择器
+        targetDateInput.focus();
+        targetDateInput.showPicker?.();
+      }
+    });
+  });
+
+  // 默认不设目标，用户自己选
+  update();
+</script>
+</body>
+</html>
