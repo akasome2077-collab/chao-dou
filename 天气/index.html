@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天气 · zz & 噜噜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --glass-high: rgba(255,255,255,0.10);
+    --glass-mid: rgba(255,255,255,0.05);
+    --glass-low: rgba(255,255,255,0.02);
+    --glass-border: rgba(255,255,255,0.10);
+    --glass-border-high: rgba(255,255,255,0.16);
+    --text-primary: #fff;
+    --text-secondary: rgba(255,255,255,0.68);
+    --text-tertiary: rgba(255,255,255,0.40);
+    --accent: #7ab8f0;
+    --love: #f0a0b8;
+    --love-soft: rgba(240,160,184,0.35);
+    --rain-accent: #8db8e0;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    min-height: 100vh; min-height: 100dvh;
+    background: linear-gradient(175deg, #1a1a28 0%, #1e2238 40%, #181a2c 100%);
+    color: var(--text-primary); overflow-x: hidden;
+    transition: background 1.2s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  canvas#bgCanvas {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; opacity: 0.65;
+  }
+
+  .app {
+    position: relative; z-index: 1;
+    max-width: 440px; margin: 0 auto; padding: 18px 20px 48px;
+    display: flex; flex-direction: column; gap: 14px;
+    min-height: 100vh; min-height: 100dvh;
+  }
+
+  .glass {
+    background: linear-gradient(160deg, var(--glass-high) 0%, var(--glass-mid) 40%, var(--glass-low) 100%);
+    border: 1px solid var(--glass-border);
+    border-top: 1px solid var(--glass-border-high);
+    backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
+  }
+
+  /* ── Love Header ── */
+  .love-header {
+    text-align: center; padding-top: 20px;
+    animation: fadeUp 0.7s ease-out;
+  }
+  .love-header .names {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    font-size: 20px; font-weight: 300; letter-spacing: 2px;
+  }
+  .love-header .names .heart-icon {
+    width: 28px; height: 28px; opacity: 0.85;
+    animation: heartPulse 2s ease-in-out infinite;
+  }
+  @keyframes heartPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+  }
+  .love-header .sub {
+    font-size: 12px; font-weight: 400; color: var(--text-tertiary);
+    margin-top: 6px; letter-spacing: 1px;
+  }
+
+  /* ── Segmented Control ── */
+  .segmented {
+    display: flex; background: rgba(255,255,255,0.06);
+    border-radius: var(--radius-sm); padding: 3px;
+    backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .segmented .slider {
+    position: absolute; top: 3px; height: calc(100% - 6px);
+    width: calc(50% - 3px);
+    background: linear-gradient(160deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.08) 100%);
+    border-radius: 8px; transition: transform 0.35s cubic-bezier(0.22, 0.9, 0.3, 1);
+    z-index: 0;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-top: 1px solid rgba(255,255,255,0.18);
+  }
+  .segmented .slider.right { transform: translateX(calc(100% + 3px)); }
+  .segmented button {
+    flex: 1; padding: 10px 14px; border: none; background: transparent;
+    color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500;
+    cursor: pointer; position: relative; z-index: 1; border-radius: 8px;
+    transition: color 0.3s; letter-spacing: 0.3px;
+    font-family: inherit;
+  }
+  .segmented button.active { color: #fff; }
+
+  /* ── Twin Cards ── */
+  .twin {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    animation: fadeUp 0.7s ease-out 0.06s both;
+  }
+  .twin-card {
+    border-radius: var(--radius-lg); padding: 16px 12px 14px; text-align: center;
+    cursor: pointer; transition: all 0.35s ease;
+    position: relative; overflow: hidden;
+  }
+  .twin-card.active { border-color: rgba(240,160,184,0.35); box-shadow: 0 0 24px rgba(240,160,184,0.08); }
+  .twin-card .twin-name {
+    font-size: 12px; font-weight: 600; color: var(--text-tertiary);
+    letter-spacing: 1.2px; margin-bottom: 6px;
+  }
+  .twin-card .twin-temp {
+    font-size: 42px; font-weight: 200; letter-spacing: -3px;
+    line-height: 1; font-feature-settings: "tnum";
+  }
+  .twin-card .twin-icon { margin: 4px 0; }
+  .twin-card .twin-cond { font-size: 13px; font-weight: 400; color: var(--accent); }
+  .twin-card .twin-hilo {
+    font-size: 12px; font-weight: 400; color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  .twin-card .twin-indicator {
+    position: absolute; top: 8px; right: 8px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--love); opacity: 0; transition: opacity 0.3s;
+  }
+  .twin-card.active .twin-indicator { opacity: 1; }
+
+  /* ── Mood Banner ── */
+  .mood {
+    border-radius: var(--radius-lg); padding: 14px 18px; text-align: center;
+    animation: fadeUp 0.7s ease-out 0.10s both;
+  }
+  .mood .mood-emoji { font-size: 28px; margin-bottom: 4px; }
+  .mood .mood-text { font-size: 13px; font-weight: 400; line-height: 1.6; color: rgba(255,255,255,0.85); }
+  .mood .mood-highlight { color: var(--love); font-weight: 500; }
+
+  /* ── Section label ── */
+  .section-label {
+    font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+    letter-spacing: 1.4px; padding: 0 10px; margin-top: 2px;
+  }
+
+  /* ── Hourly ── */
+  .hourly-wrap {
+    border-radius: var(--radius-lg); padding: 18px 8px 14px; overflow: hidden;
+    animation: fadeUp 0.7s ease-out 0.12s both;
+  }
+  .hourly-scroll {
+    display: flex; gap: 2px; overflow-x: auto;
+    scrollbar-width: none; -ms-overflow-style: none;
+    padding-bottom: 2px;
+  }
+  .hourly-scroll::-webkit-scrollbar { display: none; }
+  .hourly-item {
+    flex: 0 0 60px; text-align: center; padding: 6px 2px;
+    border-radius: 14px; transition: background 0.2s;
+  }
+  .hourly-item:hover { background: rgba(255,255,255,0.04); }
+  .hourly-item .time {
+    font-size: 11px; font-weight: 500; color: var(--text-tertiary);
+    margin-bottom: 10px; letter-spacing: 0.2px;
+  }
+  .hourly-item .icon-svg {
+    display: block; margin: 0 auto 10px; opacity: 0.85;
+  }
+  .hourly-item .temp {
+    font-size: 15px; font-weight: 500; letter-spacing: -0.3px;
+  }
+  .hourly-item .rain-dot {
+    font-size: 10px; font-weight: 500; color: var(--rain-accent);
+    margin-top: 3px; opacity: 0.85;
+  }
+
+  /* ── Detail Cards ── */
+  .cards {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .card {
+    border-radius: var(--radius-lg); padding: 18px 18px 16px;
+    animation: fadeUp 0.7s ease-out var(--delay, 0.2s) both;
+    overflow: hidden; position: relative;
+  }
+  .card.full { grid-column: 1 / -1; }
+  .card .card-label {
+    font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+    letter-spacing: 1.2px; margin-bottom: 8px;
+  }
+  .card .card-value {
+    font-size: 28px; font-weight: 300; letter-spacing: -1.2px;
+    line-height: 1.15; font-feature-settings: "tnum";
+  }
+  .card .card-value.small {
+    font-size: 20px; letter-spacing: -0.6px;
+  }
+  .card .card-sub {
+    font-size: 12px; font-weight: 400; color: var(--text-secondary);
+    margin-top: 6px; line-height: 1.6;
+  }
+
+  /* ── Date Card ── */
+  .date-card {
+    border-radius: var(--radius-lg); padding: 16px 18px;
+    animation: fadeUp 0.7s ease-out 0.14s both;
+    border-left: 2px solid var(--love-soft);
+  }
+  .date-card .date-label {
+    font-size: 11px; font-weight: 600; color: var(--love);
+    letter-spacing: 1.2px; margin-bottom: 8px;
+  }
+  .date-card .date-idea {
+    font-size: 14px; font-weight: 400; line-height: 1.7; color: rgba(255,255,255,0.88);
+  }
+
+  /* ── Loading ── */
+  .loading-area {
+    display: flex; justify-content: center; align-items: center;
+    padding: 48px; opacity: 0.35;
+  }
+  .spinner {
+    width: 22px; height: 22px; border: 2px solid rgba(255,255,255,0.12);
+    border-top-color: rgba(255,255,255,0.45); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="app">
+  <!-- Love Header -->
+  <div class="love-header">
+    <div class="names">
+      <span>zz</span>
+      <svg class="heart-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--love)">
+        <path d="M24 42C24 42 6 28 6 16C6 9.5 11.5 5 16.5 5C20 5 22.5 7 24 10C25.5 7 28 5 31.5 5C36.5 5 42 9.5 42 16C42 28 24 42 24 42Z"/>
+      </svg>
+      <span>噜噜</span>
+    </div>
+    <div class="sub" id="loveDistance">青岛 ↔ 济南</div>
+  </div>
+
+  <!-- Segmented -->
+  <div class="segmented" id="segmented">
+    <div class="slider" id="slider"></div>
+    <button data-loc="qingdao" class="active">市北区 · zz</button>
+    <button data-loc="jinan">长清区 · 噜噜</button>
+  </div>
+
+  <!-- Twin Cards -->
+  <div class="twin" id="twin"></div>
+
+  <!-- Mood Banner -->
+  <div class="mood glass" id="mood"></div>
+
+  <!-- Suggested date -->
+  <div class="date-card glass" id="dateCard"></div>
+
+  <!-- Hourly -->
+  <div class="section-label">24 小时预报</div>
+  <div class="hourly-wrap glass" id="hourlyWrap">
+    <div class="hourly-scroll" id="hourlyScroll"></div>
+  </div>
+
+  <!-- Detail Cards -->
+  <div class="cards" id="cards"></div>
+</div>
+
+<script>
+// ── Config ──
+const LOC = {
+  qingdao: { name:'市北区', fullName:'青岛市北区', lat:36.09, lon:120.38, user:'zz' },
+  jinan:   { name:'长清区', fullName:'济南长清区', lat:36.55, lon:116.75, user:'噜噜' }
+};
+const DISTANCE_KM = 295; // approximate Qingdao <-> Jinan
+let active = 'qingdao', cache = {};
+
+// ── SVG Weather Icons ──
+function weatherSVG(code, size) {
+  const s = size || 48;
+  const info = WMO[code] || WMO[0];
+  const bg = info.bg;
+  const c = 'currentColor';
+  const sw = '1.2';
+
+  function make(inner) { return `<svg width="${s}" height="${s}" viewBox="0 0 48 48" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`; }
+
+  if (bg === 'sunny') {
+    return make(`<circle cx="24" cy="24" r="9"/><path d="M24 4v4 M24 40v4 M10.3 10.3l2.8 2.8 M34.9 34.9l2.8 2.8 M4 24h4 M40 24h4 M10.3 37.7l2.8-2.8 M34.9 13.1l2.8-2.8"/>`);
+  }
+  if (bg === 'cloudy' && (code === 1 || code === 2)) {
+    return make(`<circle cx="17" cy="18" r="7"/><path d="M17 7v3 M17 29v3 M6 18h3 M28 18h3 M9.5 9.5l2.1 2.1 M22.4 22.4l2.1 2.1"/><path d="M18 36 a8 8 0 0 1 0 -16 a10 10 0 0 1 18 4 a7 7 0 0 1 0 12 z"/>`);
+  }
+  if (bg === 'cloudy') {
+    return make(`<path d="M12 34 a9 9 0 0 1 0 -18 a13 13 0 0 1 24 4 a8 8 0 0 1 0 14 z"/>`);
+  }
+  if (bg === 'rain') {
+    return make(`<path d="M12 28 a9 9 0 0 1 0 -18 a13 13 0 0 1 24 4 a8 8 0 0 1 0 11 z"/><path d="M17 30 v7 M24 30 v7 M31 30 v7 M20.5 31 v6 M27.5 31 v6"/>`);
+  }
+  if (bg === 'thunder') {
+    return make(`<path d="M12 26 a9 9 0 0 1 0 -18 a13 13 0 0 1 24 4 a8 8 0 0 1 0 11 z"/><path d="M22 26 l4 -8 l-4 3 l5 -8"/>`);
+  }
+  if (bg === 'snow') {
+    return make(`<path d="M12 26 a9 9 0 0 1 0 -18 a13 13 0 0 1 24 4 a8 8 0 0 1 0 11 z"/><circle cx="16" cy="34" r="2.5"/><circle cx="22" cy="35" r="2.5"/><circle cx="28" cy="35" r="2.5"/><circle cx="34" cy="34" r="2.5"/><circle cx="19" cy="38" r="2.5"/><circle cx="25" cy="39" r="2.5"/><circle cx="31" cy="38" r="2.5"/>`);
+  }
+  if (bg === 'fog') {
+    return make(`<path d="M10 20 h28 M12 26 h24 M10 32 h28 M14 38 h20"/><path d="M16 24 h16" stroke-width="0.8" opacity="0.4"/><path d="M18 30 h12" stroke-width="0.8" opacity="0.4"/><path d="M15 36 h18" stroke-width="0.8" opacity="0.4"/>`);
+  }
+  return make(`<circle cx="24" cy="24" r="10"/><path d="M24 10v4 M24 34v4 M12 24h4 M32 24h4"/>`);
+}
+
+// ── WMO Codes ──
+const WMO = {
+  0: { cond:'晴朗', bg:'sunny' }, 1: { cond:'大部晴朗', bg:'sunny' }, 2: { cond:'多云', bg:'cloudy' },
+  3: { cond:'阴天', bg:'cloudy' }, 45: { cond:'雾', bg:'fog' }, 48: { cond:'雾凇', bg:'fog' },
+  51: { cond:'小雨', bg:'rain' }, 53: { cond:'中雨', bg:'rain' }, 55: { cond:'大雨', bg:'rain' },
+  61: { cond:'小雨', bg:'rain' }, 63: { cond:'中雨', bg:'rain' }, 65: { cond:'大雨', bg:'rain' },
+  71: { cond:'小雪', bg:'snow' }, 73: { cond:'中雪', bg:'snow' }, 75: { cond:'大雪', bg:'snow' },
+  80: { cond:'阵雨', bg:'rain' }, 81: { cond:'中阵雨', bg:'rain' }, 82: { cond:'大阵雨', bg:'rain' },
+  95: { cond:'雷暴', bg:'thunder' }, 96: { cond:'雷暴冰雹', bg:'thunder' }, 99: { cond:'强雷暴', bg:'thunder' }
+};
+
+const BG = {
+  sunny:   ['#1a1628', '#201836', '#281e4a'],
+  cloudy:  ['#1a1a28', '#22243a', '#2c2e46'],
+  rain:    ['#141420', '#1a1a2a', '#181e2e'],
+  thunder: ['#12101e', '#18142c', '#1c163a'],
+  fog:     ['#1a222e', '#232c3a', '#2e3848'],
+  snow:    ['#18222e', '#212d3c', '#2c384a']
+};
+
+// ── API ──
+async function fetchW(key) {
+  const l = LOC[key];
+  const u = `https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}`
+    + `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,precipitation,rain,wind_speed_10m,uv_index`
+    + `&hourly=temperature_2m,precipitation_probability,weather_code,apparent_temperature,uv_index`
+    + `&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max`
+    + `&timezone=Asia/Shanghai&forecast_days=2`;
+  const r = await fetch(u);
+  if (!r.ok) throw Error('API');
+  return r.json();
+}
+
+function w(code) { return WMO[code] || { cond:'未知', bg:'cloudy' }; }
+function fmt(t) { return Math.round(t) + '°'; }
+
+// ── Date Ideas ──
+function dateIdea(data1, data2) {
+  const c1 = w(data1.current.weather_code), c2 = w(data2.current.weather_code);
+  const bg1 = c1.bg, bg2 = c2.bg;
+  const t1 = data1.current.temperature_2m, t2 = data2.current.temperature_2m;
+  const anyWet = bg1 === 'rain' || bg1 === 'thunder' || bg2 === 'rain' || bg2 === 'thunder';
+  const anySnow = bg1 === 'snow' || bg2 === 'snow';
+  const allSunny = (bg1 === 'sunny' || bg1 === 'cloudy') && (bg2 === 'sunny' || bg2 === 'cloudy');
+  const avgT = (t1 + t2) / 2;
+
+  if (anySnow) return {
+    emoji: '❄️', title: '初雪',
+    text: '如果在一起，想和你一起看雪。注意保暖，<span class="mood-highlight">围巾手套都带上</span>，别冻着了。'
+  };
+  if (anyWet) return {
+    emoji: '🌧️', title: '雨天',
+    text: '下雨天最适合宅在一起。<span class="mood-highlight">煮一锅热气腾腾的火锅</span>，窝在沙发上看电影，听雨声滴滴答答。'
+  };
+  if (allSunny && avgT >= 20 && avgT <= 28) return {
+    emoji: '🌸', title: '好天气',
+    text: '阳光正好，微风不燥。<span class="mood-highlight">一起去公园散步、野餐</span>，或者找一家有露台的咖啡馆发呆一整个下午。'
+  };
+  if (allSunny && avgT > 28) return {
+    emoji: '☀️', title: '夏日',
+    text: '夏天就是要一起吃冰淇淋！<span class="mood-highlight">去海边踩水、看日落</span>，或者找一家有空调的甜品店吃到饱。'
+  };
+  if (allSunny && avgT < 12) return {
+    emoji: '🍂', title: '微凉',
+    text: '天气凉凉的，<span class="mood-highlight">牵手散步然后把对方的手塞进自己口袋</span>。喝热巧克力，逛书店，简简单单就很暖。'
+  };
+  return {
+    emoji: '💛', title: '今天', text: '无论什么天气，<span class="mood-highlight">只要想到你</span>，就是好天气。照顾好自己，期待下次见面。'
+  };
+}
+
+// ── Mood message ──
+function moodMsg(data1, data2) {
+  const bg1 = w(data1.current.weather_code).bg, bg2 = w(data2.current.weather_code).bg;
+  const t1 = Math.round(data1.current.temperature_2m), t2 = Math.round(data2.current.temperature_2m);
+  const diff = Math.abs(t1 - t2);
+
+  if (bg1 === bg2) {
+    if (bg1 === 'rain' || bg1 === 'thunder') return { emoji:'🌧️', msg:`两座城市都下着雨，<span class="mood-highlight">像在互相思念</span>。雨后总会天晴，我们总会相见。` };
+    if (bg1 === 'sunny') return { emoji:'☀️', msg:`两座城市都是晴天，<span class="mood-highlight">就像我们的心情一样明亮</span>。好好享受今天的好天气。` };
+    if (bg1 === 'snow') return { emoji:'❄️', msg:`两座城市都飘着雪，<span class="mood-highlight">同一片天空下</span>，雪花替我亲吻你。` };
+    return { emoji:'☁️', msg:`两座城市共享同一片天空。<span class="mood-highlight">虽然距离 ${DISTANCE_KM} 公里</span>，但心在一起。` };
+  }
+  if (diff >= 8) return { emoji:'🌡️', msg:`温差 ${diff}°C，<span class="mood-highlight">记得根据温度添减衣物</span>。你那里是<span class="mood-highlight">${w(data1.current.weather_code).cond}</span>，也要照顾好自己。` };
+  if ((bg1==='rain'||bg1==='thunder')&&(bg2==='sunny'||bg2==='cloudy')) return { emoji:'🌈', msg:`zz 这边下雨，噜噜那边天晴。<span class="mood-highlight">你的笑容就是我的彩虹</span>，跨越风雨也能照亮我。` };
+  if ((bg2==='rain'||bg2==='thunder')&&(bg1==='sunny'||bg1==='cloudy')) return { emoji:'☂️', msg:`噜噜那边下雨了，zz 这边还是晴天。<span class="mood-highlight">好想把我的阳光分你一半</span>，出门记得带伞。` };
+  return { emoji:'💫', msg:`两座城市，两种天气，<span class="mood-highlight">但只有一种心情</span>——想你。<span class="mood-highlight">${DISTANCE_KM} 公里</span>不远，因为心没有距离。` };
+}
+
+// ── Clothing ──
+function clothing(temp, fl, code, uv) {
+  const t = fl != null ? fl : temp;
+  let travel = '', prot = [];
+  if (t >= 30) travel = '短袖 + 短裤/短裙，注意防暑降温';
+  else if (t >= 24) travel = '短袖 + 薄长裤，凉爽舒适';
+  else if (t >= 18) travel = '薄长袖/衬衫 + 长裤，可备薄外套';
+  else if (t >= 12) travel = '薄外套/卫衣 + 长裤';
+  else if (t >= 5) travel = '夹克/风衣 + 毛衣 + 长裤';
+  else if (t >= -5) travel = '厚外套/羽绒服 + 毛衣 + 保暖内衣';
+  else travel = '加厚羽绒服 + 毛衣 + 保暖内衣 + 围巾手套';
+
+  const info = w(code);
+  const wet = info.bg === 'rain' || info.bg === 'thunder';
+  const sunny = info.bg === 'sunny';
+  if (wet) prot.push('带雨伞');
+  if (uv >= 6) prot.push('涂防晒霜');
+  if (uv >= 4 && uv < 6) prot.push('建议防晒');
+  if (uv >= 3 && sunny) prot.push('戴墨镜');
+  if (t < 5) prot.push('注意保暖');
+  if (code >= 95) prot.push('注意避雷');
+  if (info.bg === 'fog') prot.push('注意行车安全');
+  if (prot.length === 0) prot.push('无需特别防护');
+  return { travel, protect: prot.join(' · ') };
+}
+
+// ── Rain gap ──
+function rainGap(hourly) {
+  const now = new Date(), times = hourly.time, probs = hourly.precipitation_probability;
+  for (let i = 0; i < times.length; i++) {
+    const t = new Date(times[i]);
+    if (t > now && probs[i] >= 40) {
+      const ms = t - now, h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
+      if (h===0 && m===0) return '即将下雨';
+      if (h===0) return `约 ${m} 分钟后`;
+      if (h<=1) return `约 ${h} 小时 ${m} 分钟后`;
+      return `约 ${h} 小时后`;
+    }
+  }
+  return '未来 24 小时无雨';
+}
+
+// ── Canvas ──
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let pts = [], wtype = 'cloudy', flash = 0, hearts = [];
+
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+window.addEventListener('resize', resize); resize();
+
+function setBg(t) {
+  const c = BG[t] || BG.cloudy;
+  document.body.style.background = `linear-gradient(175deg, ${c[0]} 0%, ${c[1]} 45%, ${c[2]} 100%)`;
+}
+
+function mkP(type) {
+  const p = { type, x:Math.random()*canvas.width, y:-20, s:1, sz:1, op:0.3+Math.random()*0.4, d:0, wd:0, wb:0, ws:0, wa:0 };
+  if (type==='rain') { p.y=-30; p.s=7+Math.random()*10; p.sz=0.5+Math.random()*1.4; p.wd=1+Math.random()*1.8; }
+  if (type==='snow') { p.y=Math.random()*canvas.height; p.s=0.2+Math.random()*0.6; p.sz=1.5+Math.random()*3; p.wb=Math.random()*Math.PI*2; p.ws=0.005+Math.random()*0.02; p.wa=0.3+Math.random()*0.9; }
+  if (type==='beam') { p.x=Math.random()*canvas.width; p.y=Math.random()*canvas.height*0.55; p.sz=0.5+Math.random()*1.5; p.d=0.002+Math.random()*0.005; p.op=0.15+Math.random()*0.3; }
+  if (type==='cloud') { p.sz=35+Math.random()*65; p.s=0.06+Math.random()*0.22; p.y=Math.random()*canvas.height*0.4; p.x=-100+Math.random()*(canvas.width+200); p.op=0.04+Math.random()*0.10; }
+  if (type==='heart') { p.x=Math.random()*canvas.width; p.y=canvas.height+20; p.sz=4+Math.random()*10; p.s=0.15+Math.random()*0.5; p.op=0.08+Math.random()*0.18; p.wb=Math.random()*Math.PI*2; p.ws=0.006+Math.random()*0.025; p.wa=0.2+Math.random()*0.7; }
+  return p;
+}
+
+function drawHeart(x, y, size, alpha) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(size / 24, size / 24);
+  ctx.fillStyle = `rgba(240,160,184,${alpha})`;
+  ctx.beginPath();
+  ctx.moveTo(0, -8);
+  ctx.bezierCurveTo(-12, -16, -24, 0, 0, 16);
+  ctx.bezierCurveTo(24, 0, 12, -16, 0, -8);
+  ctx.fill();
+  ctx.restore();
+}
+
+function tick() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const max = wtype==='rain'||wtype==='thunder'?120:wtype==='snow'?80:wtype==='sunny'?30:wtype==='cloudy'?20:wtype==='fog'?45:60;
+  const rate = wtype==='rain'?0.55:wtype==='thunder'?0.6:wtype==='snow'?0.35:wtype==='sunny'?0.10:wtype==='cloudy'?0.04:wtype==='fog'?0.18:0.35;
+
+  // Hearts always float
+  if (hearts.length < 18 && Math.random() < 0.025) hearts.push(mkP('heart'));
+
+  if (pts.length < max && Math.random() < rate) {
+    if (wtype==='rain'||wtype==='thunder') pts.push(mkP('rain'));
+    else if (wtype==='snow') pts.push(mkP('snow'));
+    else if (wtype==='sunny') pts.push(mkP('beam'));
+    else pts.push(mkP('cloud'));
+  }
+
+  if (wtype==='thunder' && Math.random()<0.003) flash=0.10+Math.random()*0.18;
+  flash*=0.87;
+  if (flash>0.007) { ctx.fillStyle=`rgba(255,255,255,${flash})`; ctx.fillRect(0,0,canvas.width,canvas.height); }
+
+  // Weather particles
+  for (let i=pts.length-1;i>=0;i--) {
+    const p=pts[i];
+    if (p.type==='rain') {
+      p.y+=p.s; p.x+=p.wd;
+      if (p.y>canvas.height+30||p.x>canvas.width+30) { p.y=-30; p.x=Math.random()*canvas.width; }
+      ctx.strokeStyle=`rgba(155,190,225,${p.op})`; ctx.lineWidth=p.sz;
+      ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-p.wd*0.45,p.y-16); ctx.stroke();
+    } else if (p.type==='snow') {
+      p.wb+=p.ws; p.y+=p.s; p.x+=Math.sin(p.wb)*p.wa;
+      if (p.y>canvas.height+15) { p.y=-15; p.x=Math.random()*canvas.width; }
+      ctx.fillStyle=`rgba(255,255,255,${p.op})`; ctx.beginPath(); ctx.arc(p.x,p.y,p.sz,0,Math.PI*2); ctx.fill();
+    } else if (p.type==='beam') {
+      p.op-=p.d;
+      if (p.op<=0) { pts.splice(i,1); continue; }
+      ctx.fillStyle=`rgba(255,210,130,${p.op})`; ctx.beginPath(); ctx.arc(p.x,p.y,p.sz,0,Math.PI*2); ctx.fill();
+    } else if (p.type==='cloud') {
+      p.x+=p.s;
+      if (p.x>canvas.width+150) p.x=-150;
+      const z=p.sz;
+      ctx.fillStyle=`rgba(188,202,218,${p.op})`;
+      ctx.beginPath(); ctx.ellipse(p.x,p.y,z,z*0.48,0,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(p.x-z*0.32,p.y+12,z*0.6,z*0.35,0,0,Math.PI*2); ctx.fill();
+    }
+  }
+
+  // Hearts
+  for (let i=hearts.length-1;i>=0;i--) {
+    const h=hearts[i];
+    h.wb+=h.ws; h.y-=h.s; h.x+=Math.sin(h.wb)*h.wa;
+    if (h.y<-30) { h.y=canvas.height+20; h.x=Math.random()*canvas.width; }
+    drawHeart(h.x, h.y, h.sz, h.op);
+  }
+
+  while (pts.length>max+40) pts.shift();
+  requestAnimationFrame(tick);
+}
+tick();
+
+function setWeather(type) { wtype=type; setBg(type); pts=[]; }
+
+// ── Render ──
+function renderTwin(data1, data2) {
+  const ct1 = data1.current, ct2 = data2.current;
+  const d1 = data1.daily, d2 = data2.daily;
+  const i1 = w(ct1.weather_code), i2 = w(ct2.weather_code);
+
+  document.getElementById('twin').innerHTML = `
+    <div class="twin-card glass${active==='qingdao'?' active':''}" data-loc="qingdao">
+      <div class="twin-indicator"></div>
+      <div class="twin-name">市北区 · zz</div>
+      <div class="twin-temp">${fmt(ct1.temperature_2m)}</div>
+      <div class="twin-icon">${weatherSVG(ct1.weather_code, 38)}</div>
+      <div class="twin-cond">${i1.cond}</div>
+      <div class="twin-hilo">最高 ${fmt(d1.temperature_2m_max[0])} · 最低 ${fmt(d1.temperature_2m_min[0])}</div>
+    </div>
+    <div class="twin-card glass${active==='jinan'?' active':''}" data-loc="jinan">
+      <div class="twin-indicator"></div>
+      <div class="twin-name">长清区 · 噜噜</div>
+      <div class="twin-temp">${fmt(ct2.temperature_2m)}</div>
+      <div class="twin-icon">${weatherSVG(ct2.weather_code, 38)}</div>
+      <div class="twin-cond">${i2.cond}</div>
+      <div class="twin-hilo">最高 ${fmt(d2.temperature_2m_max[0])} · 最低 ${fmt(d2.temperature_2m_min[0])}</div>
+    </div>`;
+
+  document.querySelectorAll('.twin-card').forEach(card => {
+    card.addEventListener('click', () => switchLoc(card.dataset.loc));
+  });
+
+  // Distance
+  document.getElementById('loveDistance').textContent = `青岛 ↔ 济南 · ${DISTANCE_KM} 公里`;
+}
+
+function renderMood(data1, data2) {
+  const m = moodMsg(data1, data2);
+  document.getElementById('mood').innerHTML = `
+    <div class="mood-emoji">${m.emoji}</div>
+    <div class="mood-text">${m.msg}</div>`;
+}
+
+function renderDateCard(data1, data2) {
+  const d = dateIdea(data1, data2);
+  document.getElementById('dateCard').innerHTML = `
+    <div class="date-label">${d.emoji} 在一起可以做什么</div>
+    <div class="date-idea">${d.text}</div>`;
+}
+
+function renderHourly(data) {
+  const h=data.hourly, now=new Date(); let html='';
+  for (let i=0;i<Math.min(24,h.time.length);i++) {
+    const t=new Date(h.time[i]), isNow=t.getHours()===now.getHours()&&i<2;
+    const rp=h.precipitation_probability[i];
+    html+=`<div class="hourly-item">
+      <div class="time">${isNow?'现在':t.getHours()+'时'}</div>
+      <div class="icon-svg">${weatherSVG(h.weather_code[i], 26)}</div>
+      <div class="temp">${Math.round(h.temperature_2m[i])}°</div>
+      <div class="rain-dot">${rp>=30?rp+'%':'&nbsp;'}</div>
+    </div>`;
+  }
+  document.getElementById('hourlyScroll').innerHTML=html;
+}
+
+function renderDetails(data) {
+  const cur=data.current, day=data.daily, info=w(cur.weather_code);
+  const fl=Math.round(cur.apparent_temperature);
+  const hum=cur.relative_humidity;
+  const rainProb=day.precipitation_probability_max?.[0]??cur.precipitation??0;
+  const uv=cur.uv_index??0;
+  const wind=Math.round(cur.wind_speed_10m??0);
+  const gap=rainGap(data.hourly);
+  const cl=clothing(cur.temperature_2m, cur.apparent_temperature, cur.weather_code, uv);
+  const wet=info.bg==='rain'||info.bg==='thunder';
+  const rc=wet?'var(--rain-accent)':'var(--text-primary)';
+  const user = active === 'qingdao' ? 'zz' : '噜噜';
+
+  document.getElementById('cards').innerHTML=`
+    <div class="card glass" style="--delay:0.18s">
+      <div class="card-label">体感温度</div>
+      <div class="card-value">${fmt(fl)}</div>
+      <div class="card-sub">${fl>cur.temperature_2m?'比实际温度感觉更热':fl<cur.temperature_2m?'比实际温度感觉更冷':'与实际温度一致'}</div>
+    </div>
+    <div class="card glass" style="--delay:0.22s">
+      <div class="card-label">降雨概率</div>
+      <div class="card-value" style="color:${rc}">${rainProb}%</div>
+      <div class="card-sub">${rainProb>=50?'降雨可能性较高':rainProb>=20?'小概率降雨':'降雨可能性低'}</div>
+    </div>
+    <div class="card glass" style="--delay:0.26s">
+      <div class="card-label">${wet?'正在下雨':'距离下雨'}</div>
+      <div class="card-value small" style="color:${rc}">${gap}</div>
+      <div class="card-sub">${wet?'出门记得带伞':'基于未来 24 小时预报'}</div>
+    </div>
+    <div class="card glass" style="--delay:0.30s">
+      <div class="card-label">湿度与风力</div>
+      <div class="card-value small">${hum}%<span style="font-size:14px;color:var(--text-tertiary);margin:0 6px;">湿度</span></div>
+      <div class="card-sub">风速 ${wind} 公里/时 · 紫外线指数 ${uv}（${uv>=6?'强':uv>=3?'中等':'弱'}）</div>
+    </div>
+    <div class="card glass full" style="--delay:0.34s">
+      <div class="card-label">${user} 的出行衣着建议</div>
+      <div class="card-sub" style="font-size:14px;color:#fff;margin-top:0">${cl.travel}</div>
+    </div>
+    <div class="card glass full" style="--delay:0.38s">
+      <div class="card-label">防护建议</div>
+      <div class="card-sub" style="font-size:14px;color:#fff;margin-top:0">${cl.protect}</div>
+    </div>`;
+}
+
+function loading() {
+  document.getElementById('twin').innerHTML = '<div class="loading-area" style="grid-column:1/-1"><div class="spinner"></div></div>';
+  document.getElementById('mood').innerHTML = '<div class="loading-area" style="padding:20px"><div class="spinner"></div></div>';
+  document.getElementById('dateCard').innerHTML = '<div class="loading-area" style="padding:20px"><div class="spinner"></div></div>';
+  document.getElementById('hourlyScroll').innerHTML = '<div class="loading-area"><div class="spinner"></div></div>';
+  document.getElementById('cards').innerHTML = '<div class="loading-area" style="grid-column:1/-1"><div class="spinner"></div></div>';
+}
+
+// ── Switch ──
+async function switchLoc(key) {
+  if (active === key) return;
+  active = key;
+  document.querySelectorAll('.segmented button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-loc="${key}"]`).classList.add('active');
+  document.getElementById('slider').classList.toggle('right', key === 'jinan');
+
+  const d = cache[key];
+  const other = cache[key === 'qingdao' ? 'jinan' : 'qingdao'];
+
+  if (d) {
+    const info = w(d.current.weather_code);
+    setWeather(info.bg);
+    renderHourly(d);
+    renderDetails(d);
+    if (other) renderTwin(cache.qingdao, cache.jinan);
+  }
+}
+
+// ── Init ──
+async function init() {
+  document.getElementById('segmented').addEventListener('click', e => {
+    const btn = e.target.closest('button'); if (btn) switchLoc(btn.dataset.loc);
+  });
+
+  setInterval(async () => {
+    try {
+      const [qd, jn] = await Promise.all([fetchW('qingdao'), fetchW('jinan')]);
+      cache.qingdao = qd; cache.jinan = jn;
+      const d = cache[active], info = w(d.current.weather_code);
+      setWeather(info.bg);
+      renderTwin(qd, jn); renderMood(qd, jn); renderDateCard(qd, jn);
+      renderHourly(d); renderDetails(d);
+    } catch(e) {}
+  }, 900000);
+
+  loading();
+  try {
+    const [qd, jn] = await Promise.all([fetchW('qingdao'), fetchW('jinan')]);
+    cache.qingdao = qd; cache.jinan = jn;
+    const d = cache[active], info = w(d.current.weather_code);
+    setWeather(info.bg);
+    renderTwin(qd, jn); renderMood(qd, jn); renderDateCard(qd, jn);
+    renderHourly(d); renderDetails(d);
+  } catch(e) {
+    document.getElementById('cards').innerHTML = '<div class="loading-area" style="grid-column:1/-1;color:var(--text-secondary)">加载失败，请刷新重试</div>';
+  }
+}
+init();
+</script>
+</body>
+</html>
