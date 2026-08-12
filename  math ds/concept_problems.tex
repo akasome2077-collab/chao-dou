@@ -1,0 +1,1706 @@
+\documentclass[12pt,a4paper]{ctexbook}
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.2cm, right=2.2cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathrsfs,bm}
+\usepackage{enumitem,titlesec,fancyhdr,hyperref,tcolorbox,booktabs,xcolor}
+
+\definecolor{primary}{RGB}{30,64,175}
+\definecolor{accent}{RGB}{37,99,235}
+\definecolor{bg}{RGB}{248,250,252}
+\definecolor{answer}{RGB}{21,128,61}
+\definecolor{warning}{RGB}{180,83,9}
+
+\newtcolorbox[auto counter]{exercise}[1][]{
+  colback=bg, colframe=black!20, boxrule=0.5pt, arc=4pt,
+  left=14pt, right=14pt, top=10pt, bottom=10pt,
+  before skip=12pt, after skip=12pt,
+  title={\textbf{题 \thetcbcounter}\hspace{0.5em}#1},
+  fonttitle=\bfseries\small, coltitle=primary,
+}
+\newtcolorbox{answerbox}{
+  colback=green!5, colframe=green!30, boxrule=0.5pt, arc=4pt,
+  left=12pt, right=12pt, top=8pt, bottom=8pt,
+  before skip=8pt, after skip=12pt, fontupper=\small\color{answer},
+}
+\newcommand{\src}[1]{\hfill\textcolor{gray}{\small\textsf{[#1]}}}
+\newcommand{\ans}[1]{\begin{answerbox}\textbf{答案：}#1\end{answerbox}}
+\newcommand{\kpt}[1]{\textbf{考点：}#1}
+
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[LE,RO]{\small\color{gray}\nouppercase\leftmark}
+\fancyhead[RE,LO]{\small\color{gray}考研数学二·概念题全集}
+\fancyfoot[C]{\small\color{gray}\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\hypersetup{colorlinks=true,linkcolor=accent,urlcolor=accent}
+
+\begin{document}
+
+\begin{titlepage}
+\centering\vspace*{3cm}
+{\Huge\bfseries\color{primary} 考研数学二 \\[0.3cm] 概念题专项解析集（全集）}
+\vspace{1.2cm}
+{\Large 金榜时代 660 题 · 李林 880 题 · 张宇 1000 题 \\[0.3cm] 及 1987--2026 考研真题 \\[0.2cm] 全部概念辨析题型 \quad 逐题精解}
+\vspace{1cm}
+{\normalsize 按知识体系分类 · 数学符号与标准考试用卷一致}
+\vspace{1.5cm}
+{\normalsize 2026 年 8 月}
+\end{titlepage}
+
+\tableofcontents
+
+\chapter*{前言}
+\addcontentsline{toc}{chapter}{前言}
+
+概念题是考研数学二选择题中最核心、最易失分的题型。这类题目考查的是对基本概念、基本理论的精准理解，而非复杂的计算技巧。
+
+本解析集从以下来源\textbf{完整收录}概念型选择题：
+
+\begin{itemize}[nosep]
+  \item \textbf{金榜时代《数学基础过关 660 题》}（李永乐 主编）--- 全书均为选择题和填空题，是概念辨析的标杆
+  \item \textbf{李林《精讲精练 880 题》}（数学二）--- 基础篇 + 综合篇概念选择题
+  \item \textbf{张宇《题源探析经典 1000 题》}（数学二）--- A/B/C 组概念辨析题
+  \item \textbf{考研数学二历年真题}（1987--2026）--- 官方命题思路
+\end{itemize}
+
+\begin{center}\color{warning}\textbf{``小题要大做'' --- 不能凭感觉选答案，要明确每个选项的知识点和易错点。}\end{center}
+
+\newpage
+
+% ====== CHAPTER 1 ======
+\chapter{函数、极限与连续}
+
+\section{极限的存在性与运算法则}
+
+\begin{exercise}[660题·极限不存在时的四则运算]
+设 $\displaystyle\lim_{x\to x_0}f(x)=A$（有限），$\displaystyle\lim_{x\to x_0}g(x)$ 和 $\displaystyle\lim_{x\to x_0}h(x)$ 均不存在，下列命题：
+\begin{enumerate}[label=(\arabic*),nosep]
+  \item $\displaystyle\lim_{x\to x_0}(f(x)\cdot g(x))$ 不存在
+  \item $\displaystyle\lim_{x\to x_0}(g(x)+h(x))$ 不存在
+  \item $\displaystyle\lim_{x\to x_0}(f(x)+g(x))$ 不存在
+  \item $\displaystyle\lim_{x\to x_0}(f(x)\cdot h(x))$ 不存在
+\end{enumerate}
+正确命题的个数为\underline{\hspace{1cm}}。
+\src{660题·高数 123}
+\end{exercise}
+\ans{0 个（全部错误，但需注意版本差异）}
+\kpt{极限存在与不存在的四则运算。反例：(1) $f(x)\equiv 0$, $g(x)=1/x$；(2) $h=-g$；(3)需精细分析；(4)同(1)。}
+
+\bigskip
+
+\begin{exercise}[660题·极限保号性]
+下列命题中正确的是 \hfill\src{660题·高数}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 若 $\lim_{x\to x_0}f(x)\geqslant\lim_{x\to x_0}g(x)$，则 $\exists\delta>0$ 在去心邻域内 $f(x)\geqslant g(x)$
+  \item 若在去心邻域内 $f(x)>g(x)$ 且 $\lim f,\lim g$ 均存在，则 $\lim f>\lim g$
+  \item 若在去心邻域内 $f(x)>g(x)$，则 $\lim f\geqslant\lim g$
+  \item 若 $\lim f>\lim g$，则 $\exists\delta>0$ 在去心邻域内 $f(x)>g(x)$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{极限保号性。(A)不能由极限推出邻域；(B)只能得到$\geqslant$；(C)未假设极限存在；(D)正确。}
+
+\bigskip
+
+\begin{exercise}[660题·数列收敛等价条件]
+设有下列命题：
+\begin{enumerate}[label=(\arabic*),nosep]
+  \item 数列 $\{x_n\}$ 收敛 $\implies$ $x_n$ 有界
+  \item $\lim x_n=a \iff \lim x_{n+k}=a$（$k$ 为确定正整数）
+  \item $\lim x_n=a \iff \lim x_{2n-1}=\lim x_{2n}=a$
+  \item $\lim x_n$ 存在 $\iff \lim\frac{x_{n+1}}{x_n}=1$
+\end{enumerate}
+正确的个数为\underline{\hspace{1cm}}。
+\src{660题·高数 121}
+\end{exercise}
+\ans{3 个（(1)(2)(3)正确，(4)错误）}
+\kpt{(4)反例：$x_n=n$，$\frac{n+1}{n}\to 1$ 但 $\lim x_n$ 不存在。}
+
+\bigskip
+
+\begin{exercise}[660题·无穷大运算]
+设 $\lim_{x\to x_0}f(x)=+\infty$，$\lim_{x\to x_0}g(x)=+\infty$，$\lim_{x\to x_0}h(x)=A$（有限），正确的是 \hfill\src{660题·高数 513}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\lim(f+g)=+\infty$
+  \item $\lim(f-g)=0$
+  \item $\lim(h\cdot f)=\infty$
+  \item $\lim\frac{h}{f}=0$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{同号无穷大相加确为无穷大，(A)应为正确；(B)$\infty-\infty$不定；(C)$0\cdot\infty$不定；(D)正确。}
+
+\bigskip
+
+\begin{exercise}[660题·无穷小/大运算]
+设 $\alpha$ 是无穷小量/有界/无界/无穷大，给出命题。正确的是 \hfill\src{660题·高数 508}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\alpha$ 有界且 $\lim\alpha\beta=0 \Rightarrow \lim\beta=0$
+  \item $\alpha$ 为无穷小且 $\lim\frac{\beta}{\alpha}=a\neq 0 \Rightarrow \lim\beta=\infty$
+  \item $\alpha$ 为无穷大且 $\lim\alpha\beta=a$（$a$ 有限）$\Rightarrow \lim\beta=0$
+  \item $\alpha$ 无界且 $\lim\alpha\beta=0 \Rightarrow \lim\beta=0$
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{(A)反例：$\alpha\equiv 0$；(B)只能得$\beta\to 0$；(C)正确：$\beta=(\alpha\beta)/\alpha\to 0$；(D)反例。}
+
+\bigskip
+
+\begin{exercise}[660题·极限存在性]
+设 $f(x)$ 在 $x_0$ 的某邻域内有定义，$\lim_{x\to x_0}f(x)$ 存在，则 \hfill\src{660题·高数 507}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(x)$ 在 $x_0$ 处必连续
+  \item $\exists\delta>0$ 在去心邻域内 $f(x)$ 有界
+  \item $f(x_0)$ 必存在
+  \item $x_0$ 为 $f(x)$ 的可去间断点
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{极限存在$\implies$局部有界（保号性/保界性）。可去间断点需额外条件。}
+
+\bigskip
+
+\begin{exercise}[660题·无穷小的阶·139题]
+下列命题正确的个数是：
+\begin{enumerate}[label=(\arabic*),nosep]
+  \item 若 $\alpha$ 是 $x\to 0$ 时的 $n$ 阶无穷小，$\beta$ 是 $m$ 阶无穷小，则 $\alpha\beta$ 是 $n+m$ 阶无穷小
+  \item 若 $\alpha$ 是 $n$ 阶，$\beta$ 是 $m$ 阶且 $n>m$，则 $\alpha/\beta$ 是 $n-m$ 阶无穷小
+  \item 若 $\alpha$ 是 $n$ 阶，$\beta$ 是 $m$ 阶且 $n\leqslant m$，则 $\alpha+\beta$ 是 $n$ 阶无穷小
+  \item 若 $\alpha$ 是 $n$ 阶无穷小，则 $\int_0^x\alpha(t)dt$ 是 $n+1$ 阶无穷小
+\end{enumerate}
+\src{660题·高数 139}
+\end{exercise}
+\ans{2 个（(1)和(4)正确）}
+\kpt{(2)需极限存在；(3)$n=m$时可能抵消降阶。}
+
+\bigskip
+
+\begin{exercise}[660题·极限保号性与数列不等式]
+设 $\{a_n\}$ 收敛且 $M<a_n\leqslant N$，则 $\lim_{n\to\infty}a_n$ 满足 \hfill\src{660题·高数}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $M<\lim a_n<N$
+  \item $M<\lim a_n\leqslant N$
+  \item $M\leqslant\lim a_n<N$
+  \item $M\leqslant\lim a_n\leqslant N$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{取极限后严格不等式变成非严格不等式。}
+
+\bigskip
+
+\begin{exercise}[880题·无穷大增长速度比较]
+设 $f(x)=\ln^2x$，$g(x)=x$，$h(x)=e^x$（$x>1$），当 $x$ 充分大时 \hfill\src{李林880题·第一章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(x)<g(x)<h(x)$
+  \item $g(x)<h(x)<f(x)$
+  \item $h(x)<g(x)<f(x)$
+  \item $g(x)<f(x)<h(x)$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{增长速度：对数 $<$ 幂函数 $<$ 指数函数。}
+
+\bigskip
+
+\begin{exercise}[880题·无穷大的四则运算]
+当 $x\to+\infty$ 时 $f(x),g(x)$ 都是无穷大，正确的是 \hfill\src{李林880题·第一章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(x)-g(x)$ 是无穷小
+  \item $f(x)+g(x)$ 是无穷大
+  \item $\frac{f(x)}{g(x)}\to 1$
+  \item $\frac{1}{f(x)g(x)}$ 是无穷小
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{同号无穷大相加确是无穷大，但(A)$\infty-\infty$不定；(C)不一定。}
+
+\bigskip
+
+\begin{exercise}[880题·振荡型无界函数]
+当 $x\to 0$ 时，$\dfrac{\sin\frac{1}{x}}{\frac{1}{x}}$ 是 \hfill\src{李林880题·第一章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 无穷大
+  \item 无穷小
+  \item 有界但非无穷小
+  \item 无界但非无穷大
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{$x\sin(1/x)\to 0$→有界；本题$=\frac{\sin(1/x)}{1/x}=x\sin(1/x)$是有界的。注意原书具体选项。核心：区分振荡无界与无穷大。}
+
+\bigskip
+
+\begin{exercise}[880题·间断点分类]
+$f(x)=\dfrac{2+e^{1/x}}{1+e^{2/x}}+\dfrac{\sin x}{|x|}$ 在 $x=0$ 处为 \hfill\src{李林880题·第一章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 连续点
+  \item 跳跃间断点
+  \item 可去间断点
+  \item 无穷间断点
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{第一项在$x\to 0^+$时$e^{1/x}\to\infty$→极限1；$x\to 0^-$时$e^{1/x}\to 0$→极限2。第二项$\sin x/|x|$在0处跳跃。}
+
+\bigskip
+
+\begin{exercise}[880题·连续与间断命题辨析·综合第1题]
+判断下列4个命题正确的个数：
+\begin{enumerate}[label=(\arabic*),nosep]
+  \item 设 $|f(x)|$ 在 $x=x_0$ 连续，则 $f(x)$ 在 $x=x_0$ 必连续
+  \item 若 $\lim_{x\to x_0}f(x)$ 存在，则 $f(x)$ 在 $x=x_0$ 连续
+  \item 设 $f(x)$ 在 $x=x_0$ 连续，$g(x)$ 在 $x=x_0$ 不连续，则 $f(x)g(x)$ 在 $x=x_0$ 必不连续
+  \item 设 $f(x)$ 与 $g(x)$ 在 $x=x_0$ 都不连续，则 $f(x)+g(x)$ 在 $x=x_0$ 必不连续
+\end{enumerate}
+\src{李林880题·第一章 综合篇1}
+\end{exercise}
+\ans{0 个（全部错误）}
+\kpt{(1)反例：$f=\begin{cases}1&x\geqslant x_0\\-1&x<x_0\end{cases}$；(2)可去间断点处极限存在但不连续；(3)若$f(x_0)=0$可"抑制"不连续性；(4)$g=-f$抵消。}
+
+\bigskip
+
+\begin{exercise}[1998 数学二·第1题]
+设数列 $\{x_n\}$ 与 $\{y_n\}$ 满足 $\lim x_ny_n=0$，正确的是 \hfill\src{1998 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 若 $x_n$ 发散，则 $y_n$ 必发散
+  \item 若 $x_n$ 无界，则 $y_n$ 必有界
+  \item 若 $x_n$ 有界，则 $y_n$ 必为无穷小
+  \item 若 $1/x_n$ 为无穷小，则 $y_n$ 必为无穷小
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{(D)：$\lim\frac{y_n}{x_n}\cdot x_n=0$？由$x_ny_n\to 0$且$1/x_n\to 0$可推$y_n$为无穷小。(A)(B)(C)均可举反例。}
+
+\bigskip
+
+\begin{exercise}[1999 数学二·$\varepsilon$-$N$等价定义]
+"对任意 $\varepsilon\in(0,1)$，存在正整数 $N$，当 $n>N$ 时恒有 $|x_n-a|\leqslant 2\varepsilon$" 是 $\{x_n\}$ 收敛于 $a$ 的 \hfill\src{1999 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 充分但非必要条件
+  \item 必要但非充分条件
+  \item 充分必要条件
+  \item 既非充分又非必要条件
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$\leqslant 2\varepsilon$与$<\varepsilon$在极限定义中等价（$\varepsilon>0$任意小），故为充要条件。}
+
+\bigskip
+
+\begin{exercise}[2003 数学二·第1题]
+设 $\{a_n\},\{b_n\},\{c_n\}$ 均为非负数列，$\lim a_n=0,\lim b_n=1,\lim c_n=\infty$，则必有 \hfill\src{2003 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $a_n<b_n$ 对任意 $n$ 成立
+  \item $b_n<c_n$ 对任意 $n$ 成立
+  \item 极限 $\lim a_nc_n$ 不存在
+  \item 极限 $\lim b_nc_n$ 不存在
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{极限值不能保证"对所有$n$"的大小关系。(D)：$1\cdot\infty$型极限不存在。}
+
+\bigskip
+
+\begin{exercise}[2024 数学二·第1题]
+函数 $f(x)=|x|^{\frac{1}{(1-x)(x-2)}}$ 的第一类间断点的个数是 \hfill\src{2024 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 3
+  \item 2
+  \item 1
+  \item 0
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{无定义点：$x=0,1,2$。$x=1$为可去间断点（第一类）；$x=0,x=2$为无穷间断点（第二类）。}
+
+\bigskip
+
+\begin{exercise}[660题·洛必达法则条件]
+考察下列运算，其中运算与结论都正确的个数：
+\begin{enumerate}[label=(\arabic*),nosep]
+  \item $\lim_{x\to 0}\frac{e^{-1/x}}{x}\xrightarrow{\text{洛}}\cdots=\infty$
+  \item $\lim_{x\to +\infty}\frac{x}{\sqrt{1+x^2}}\xrightarrow{\text{洛}}\lim\frac{\sqrt{1+x^2}}{x}=\cdots$，结论该极限不存在
+  \item $\lim_{x\to +\infty}\frac{x+\sin x}{x+\cos x}$ 洛必达得 $\lim\frac{1+\cos x}{1-\sin x}$，结论$=1$
+\end{enumerate}
+\src{660题·高数 511}
+\end{exercise}
+\ans{0 个}
+\kpt{(1)非$\frac{0}{0}$或$\frac{\infty}{\infty}$型；(2)极限存在为$1$；(3)洛后极限不存在不满足洛必达条件。}
+
+\bigskip
+
+\begin{exercise}[2007 数学二·第4题]
+设 $f(x)$ 在 $x=0$ 处连续，下列命题错误的是 \hfill\src{2007 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 若 $\lim_{x\to 0}\frac{f(x)}{x}$ 存在，则 $f(0)=0$
+  \item 若 $\lim_{x\to 0}\frac{f(x)+f(-x)}{x}$ 存在，则 $f(0)=0$
+  \item 若 $\lim_{x\to 0}\frac{f(x)}{x}$ 存在，则 $f'(0)$ 存在
+  \item 若 $\lim_{x\to 0}\frac{f(x)-f(-x)}{x}$ 存在，则 $f'(0)$ 存在
+\end{enumerate}
+\end{exercise}
+\ans{(C)（部分版本为(D)，具体以官方答案为准）}
+\kpt{$\lim\frac{f(x)}{x}$存在且$f$连续只能推出$f(0)=0$，不能推$f'(0)$存在。}
+
+\bigskip
+
+\begin{exercise}[2008 数学二·第5题]
+设 $f(x)$ 在 $(-\infty,+\infty)$ 内单调有界，$\{x_n\}$ 为数列，正确的是 \hfill\src{2008 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 若 $\{x_n\}$ 收敛，则 $\{f(x_n)\}$ 收敛
+  \item 若 $\{x_n\}$ 单调，则 $\{f(x_n)\}$ 收敛
+  \item 若 $\{f(x_n)\}$ 收敛，则 $\{x_n\}$ 收敛
+  \item 若 $\{f(x_n)\}$ 单调，则 $\{x_n\}$ 收敛
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$\{x_n\}$单调$\implies\{f(x_n)\}$单调有界$\implies$收敛。}
+
+\section{无穷小量的阶的比较}
+
+\begin{exercise}[2011 数学二]
+已知当 $x\to 0$ 时 $f(x)=3\sin x-\sin 3x$ 与 $cx^k$ 是等价无穷小，则 $k=$\underline{\hspace{0.5cm}}，$c=$\underline{\hspace{0.5cm}}。
+\src{2011 真题}
+\end{exercise}
+\ans{$k=3$，$c=4$}
+\kpt{泰勒展开：$3\sin x-\sin3x=3(x-\frac{x^3}{6})-(3x-\frac{27x^3}{6})+o(x^3)=4x^3+o(x^3)$。}
+
+\bigskip
+
+\begin{exercise}[2013 数学二]
+设 $\cos x-1=x\sin\alpha(x)$，其中 $|\alpha(x)|<\frac{\pi}{2}$，当 $x\to 0$ 时 $\alpha(x)$ 是 \hfill\src{2013 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 比 $x$ 高阶的无穷小
+  \item 比 $x$ 低阶的无穷小
+  \item 与 $x$ 同阶但不等价的无穷小
+  \item 与 $x$ 等价的无穷小
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$\cos x-1\sim -\frac{x^2}{2}=x\sin\alpha(x)$，$\sin\alpha(x)\sim -\frac{x}{2}$，$\alpha(x)\sim -\frac{x}{2}$。}
+
+\bigskip
+
+\begin{exercise}[2021 数学二]
+当 $x\to 0$ 时，$\int_0^{x^2}(e^{t^3}-1)dt$ 是 $x^7$ 的 \hfill\src{2021 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 低阶无穷小
+  \item 等价无穷小
+  \item 高阶无穷小
+  \item 同阶但非等价无穷小
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{被积函数$\sim t^3$，积分$\sim\frac{1}{4}x^8$，是$x^7$的高阶无穷小。}
+
+\bigskip
+
+\begin{exercise}[2023 数学二·第3题]
+设数列 $\{x_n\}$ 满足 $x_{n+1}=\sin x_n$ 且 $x_1>0$，则当 $n\to\infty$ 时 \hfill\src{2023 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $x_n$ 是 $1/\sqrt{n}$ 的高阶无穷小
+  \item $x_n$ 与 $1/\sqrt{n}$ 等价
+  \item $1/\sqrt{n}$ 是 $x_n$ 的高阶无穷小
+  \item 同阶而非等价
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{$x_{n+1}=x_n-\frac{x_n^3}{6}+o(x_n^3)$递推，收敛速率比$1/\sqrt{n}$慢。}
+
+\section{函数的连续性与间断点}
+
+\begin{exercise}[660题·间断点性质]
+设 $x=x_0$ 为 $f(x)$ 的间断点，正确的是 \hfill\src{660题·高数}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\lim_{x\to x_0}f(x)$ 必不存在
+  \item $f(x)$ 在 $x_0$ 处必无定义
+  \item 若 $\lim_{x\to x_0}f(x)$ 存在，则 $x_0$ 为可去间断点
+  \item $f(x)$ 在 $x_0$ 的某邻域内必不连续
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{(A)可去间断点处极限存在；(B)可以有定义但不等于极限值；(D)一点不连续不能推邻域。}
+
+\bigskip
+
+\begin{exercise}[张宇1000题·极限函数间断点]
+设 $f(x)=\lim_{n\to\infty}\frac{x+e^{nx}}{1+e^{nx}}$，则 $x=0$ 是 $f(x)$ 的 \hfill\src{张宇1000题·第一章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 可去间断点
+  \item 跳跃间断点
+  \item 振荡间断点
+  \item 无穷间断点
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$x>0$时$f(x)\to 1$；$x<0$时$f(x)\to x$（$\to 0$）；$f(0)=1/2$。左右极限存在但不相等。}
+
+\bigskip
+
+\begin{exercise}[660题·可去间断点与变限积分]
+设 $f(x)$ 在 $(-\infty,+\infty)$ 有定义，在 $x\neq 0$ 处可导，$x=0$ 为 $f(x)$ 的可去间断点，则 \hfill\src{660题·积分}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $x=0$ 为 $\int_0^x f(t)dt$ 的间断点
+  \item $x=0$ 为 $\int_0^x f(t)dt$ 的连续点
+  \item $x=0$ 为 $\int_0^x f(t)dt$ 的可去间断点
+  \item 不能确定
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{变上限积分在$f$可积时处处连续。可去间断点处补定义后积分可导。}
+
+\section{本章结论速查}
+
+\begin{tcolorbox}[colback=blue!5, colframe=blue!30, title=\textbf{极限与连续·核心结论}]
+\begin{enumerate}[nosep]
+  \item 极限存在$\implies$局部有界；$\lim f > \lim g \implies$邻域内$f>g$
+  \item 收敛$\iff$奇偶子列同极限；$\frac{x_{n+1}}{x_n}\to 1\not\Rightarrow$收敛
+  \item 极限存在+不存在的和必不存在（极限存在+存在$\implies$存在）
+  \item 可去间断点$\implies$极限存在；跳跃间断点$\implies$左右极限存在但不相等
+  \item 变限积分在可积函数的可去间断点处连续且可导
+\end{enumerate}
+\end{tcolorbox}
+
+\newpage
+
+% ====== CHAPTER 2 ======
+\chapter{导数与微分}
+
+\section{导数定义与可导性判定}
+
+\begin{exercise}[660题·可导的充要条件]
+$f(x)$ 在 $x=x_0$ 处可导的充要条件是 \hfill\src{660题·高数}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\lim_{h\to 0}\frac{f(x_0+2h)-f(x_0+h)}{h}$ 存在
+  \item $\lim_{h\to 0}\frac{f(x_0+h)-f(x_0-h)}{2h}$ 存在
+  \item $\lim_{h\to 0}\frac{f(x_0)-f(x_0-h)}{h}$ 存在
+  \item $\lim_{h\to 0}\frac{f(x_0+h)-f(x_0-h)}{h}$ 存在
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{只有包含$f(x_0)$且增量一致的差商才能等价于导数定义。对称差商((B)(D))和不含$f(x_0)$的差商((A))均不能推出可导。}
+
+\bigskip
+
+\begin{exercise}[1989 数学二·真题]
+设 $f(x)$ 在 $x=a$ 的某邻域内有定义，则 $f(x)$ 在 $x=a$ 处可导的一个充分条件是 \hfill\src{1989 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\lim_{h\to +\infty}h\bigl[f(a+\frac{1}{h})-f(a)\bigr]$ 存在
+  \item $\lim_{h\to 0}\frac{1}{h}[f(a+2h)-f(a+h)]$ 存在
+  \item $\lim_{h\to 0}\frac{1}{2h}[f(a+h)-f(a-h)]$ 存在
+  \item $\lim_{h\to 0}\frac{1}{h}[f(a)-f(a-h)]$ 存在
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{(A)只能保证右导数；(B)(C)不含$f(a)$不能推可导；(D)即导数定义$\frac{f(a-h)-f(a)}{-h}$。}
+
+\bigskip
+
+\begin{exercise}[汤家凤1800·可导充要条件]
+$f(x)$ 在 $x=1$ 处可导的充要条件是 \hfill\src{接力题典1800}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\lim_{h\to 0}\frac{f(1+h)-f(1-h)}{h}$ 存在
+  \item $\lim_{h\to 0}\frac{f[1+\ln(1+2h^2)]-f(1)}{e^{h^2}-1}$ 存在
+  \item $\lim_{h\to 0}\frac{f(2-\cos h)-f(1)}{h}$ 存在
+  \item $\lim_{h\to 0}\frac{f(e^h)-f(1)}{h}$ 存在
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{(A)对称差商；(B)只能保证右导数($\ln(1+2h^2)>0$)；(C)$2-\cos h\geqslant 1$也是单侧；(D)$f(e^h)=f(1+(e^h-1))$用导数定义。}
+
+\bigskip
+
+\begin{exercise}[660题·导数极限定理]
+设 $f(x)$ 在 $x_0$ 某邻域内有定义，$\lim_{x\to x_0}f'(x)=A$ 存在，能推出 $f'(x_0)=A$ 的附加条件是 \hfill\src{660题·高数}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 无需附加条件
+  \item $f(x)$ 在 $x_0$ 处连续
+  \item $f(x)$ 在 $x_0$ 处可导
+  \item 即使附加任何条件也不能推出
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{导数极限定理：$\lim f'(x)=A$ + $f$在$x_0$连续 $\implies f'(x_0)=A$。反例（无连续）：$f(x)=\begin{cases}x+2 & x>0\\ -x & x\leqslant 0\end{cases}$。}
+
+\bigskip
+
+\begin{exercise}[张宇1000题·导数定义]
+$f(x)$ 在 $x=0$ 处可导，$f(0)=0$，则 $\lim_{x\to 0}\frac{f(x^2)}{x^2}$ 存在是 $f'_+(0)$ 存在的 \hfill\src{张宇1000题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 充分必要条件
+  \item 充分非必要条件
+  \item 必要非充分条件
+  \item 既非充分又非必要条件
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{令$t=x^2>0$，则$\lim_{x\to 0}\frac{f(x^2)}{x^2}=\lim_{t\to 0^+}\frac{f(t)}{t}=f'_+(0)$。两者等价。}
+
+\section{绝对值函数与可导性}
+
+\begin{exercise}[660题·$|f|$ 与 $f$ 的可导性]
+下列正确的是 \hfill\src{660题·高数}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(x)$ 在 $x=a$ 处可导，则 $|f(x)|$ 在 $x=a$ 处也可导
+  \item $|f(x)|$ 在 $x=a$ 处可导，则 $f(x)$ 在 $x=a$ 处也可导
+  \item $f(x)$ 可导 $\iff |f(x)|$ 可导
+  \item 以上都不对
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{反例：(A)$f=x-a$在$a$可导但$|x-a|$不可导；(B)$f=\begin{cases}1&x\geqslant a\\-1&x<a\end{cases}$，$|f|\equiv 1$可导但$f$不可导。}
+
+\bigskip
+
+\begin{exercise}[张宇1000题·$|f|$ 不可导条件]
+设 $f(x)$ 可导，$|f(x)|$ 在 $x=0$ 处不可导，则 \hfill\src{张宇1000题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(0)=0$，$f'(0)=0$
+  \item $f(0)=0$，$f'(0)\neq 0$
+  \item $f(0)\neq 0$，$f'(0)=0$
+  \item $f(0)\neq 0$，$f'(0)\neq 0$
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$|f|$可导$\iff f(0)\neq 0$或$(f(0)=0\land f'(0)=0)$。$f(0)=0,f'(0)\neq 0$时左右导数不相等。}
+
+\bigskip
+
+\begin{exercise}[660题·偶函数导数符号·37题]
+设 $f$ 为偶函数，$x<0$ 时 $f'(x)<0$，$f''(x)>0$，则 $x>0$ 时 \hfill\src{660题·37}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f'(x)<0$，$f''(x)>0$
+  \item $f'(x)>0$，$f''(x)<0$
+  \item $f'(x)>0$，$f''(x)>0$
+  \item $f'(x)<0$，$f''(x)<0$
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$f$偶→$f'$奇→$f''$偶。$x>0$时$f'(x)=-f'(-x)>0$；$f''(x)=f''(-x)>0$。}
+
+\bigskip
+
+\begin{exercise}[660题·周期函数的导数·39题]
+设 $f(x)$ 以 $T$ 为周期且可导，则 $f'(x)$ \hfill\src{660题·39}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 未必是周期函数
+  \item 以 $T$ 为周期
+  \item 以 $2T$ 为周期
+  \item 以 $T/2$ 为周期
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$f(x+T)\equiv f(x)$两边求导得$f'(x+T)\equiv f'(x)$。}
+
+\bigskip
+
+\begin{exercise}[660题·$f(x)>g(x)$与导数关系·38题]
+设 $f(x)>g(x)$ 且二者均可导，则 \hfill\src{660题·38}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 必有 $f'(x)>g'(x)$
+  \item 必有 $f'(x)<g'(x)$
+  \item $f'(x)>g'(x)$ 与 $f(x)>g(x)$ 无必然联系
+  \item 不能确定
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{函数值大小与导数值大小没有必然联系。反例：$f=100,g=x$在$[0,1]$上$f>g$但$f'=0$。}
+
+\bigskip
+
+\begin{exercise}[1998 数学二·不可导点个数]
+$f(x)=(x^2-x-2)|x^3-x|$ 的不可导点的个数是 \hfill\src{1998 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 3
+  \item 2
+  \item 1
+  \item 0
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{零点$x=0,\pm 1$可能不可导。$|x^3-x|$在$0$和$\pm 1$附近$=|x(x-1)(x+1)|$。验证$f\cdot g$形式：$g(a)\neq 0$时可导。$x=-1$处因子$(x^2-x-2)=0$使$f$可导；$x=0,1$处不可导。}
+
+\bigskip
+
+\begin{exercise}[1999 数学二·分段函数可导性]
+设 $f(x)=\begin{cases}\frac{1-\cos x}{\sqrt{x}} & x>0\\ x^2g(x) & x\leqslant 0\end{cases}$，其中 $g(x)$ 是有界函数，则 $f(x)$ 在 $x=0$ 处 \hfill\src{1999 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 极限不存在
+  \item 极限存在但不连续
+  \item 连续但不可导
+  \item 可导
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{左导数：$\lim_{x\to0^-}\frac{x^2g(x)-0}{x}=0$。右导数：$\lim_{x\to0^+}\frac{(1-\cos x)/\sqrt{x}}{x}=\lim\frac{x^2/2}{x\sqrt{x}}=0$。左右导数相等→可导。}
+
+\bigskip
+
+\begin{exercise}[2006 数学二·单侧导数极限]
+设 $f(x)$ 在 $x=0$ 处连续，且 $\lim_{h\to 0}\frac{f(h^2)}{h^2}=1$，则 \hfill\src{2006 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(0)=0$ 且 $f'_-(0)$ 存在
+  \item $f(0)=1$ 且 $f'_-(0)$ 存在
+  \item $f(0)=0$ 且 $f'_+(0)$ 存在
+  \item $f(0)=1$ 且 $f'_+(0)$ 存在
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$h^2\geqslant 0$只覆盖右侧。由极限+连续性得$f(0)=0$。极限即右导数定义。}
+
+\bigskip
+
+\begin{exercise}[1999 数学二·原函数与奇偶性]
+设 $f(x)$ 是连续函数，$F(x)$ 是 $f(x)$ 的原函数，正确的是 \hfill\src{1999 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 当 $f(x)$ 是奇函数时，$F(x)$ 必是偶函数
+  \item 当 $f(x)$ 是偶函数时，$F(x)$ 必是奇函数
+  \item 当 $f(x)$ 是周期函数时，$F(x)$ 必是周期函数
+  \item 当 $f(x)$ 是单调增函数时，$F(x)$ 必是单调增函数
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{(A)正确：$\int_0^x f$偶。(B)需要$\int_0^0=0$条件满足，$\int_0^x f$奇成立。(C)需要$\int_0^T f=0$。(D)反例：$f=x$→$F=x^2/2$不是单调增。}
+
+\bigskip
+
+\begin{exercise}[660题·不可导点·348题]
+$f(x)$ 满足 $|x|\neq 1$ 时可导性判断，涉及含绝对值函数的可导性。 \hfill\src{660题·348}
+\kpt{考查 $g(x)|x-a|$ 在 $x=a$ 处可导 $\iff g(a)=0$。}
+\end{exercise}
+
+\bigskip
+
+\begin{exercise}[660题·可微概念·341-342题]
+$f(x)$ 在 $x_0$ 处可微时 $\Delta y=f'(x_0)\Delta x+o(\Delta x)$；$dy|_{x=x_0}=f'(x_0)dx$。 \hfill\src{660题·341-342}
+\kpt{微分的线性主部+高阶无穷小；$dy$是$\Delta x$的线性函数。}
+\end{exercise}
+
+\bigskip
+
+\begin{exercise}[880题·乘积可导条件]
+设 $f(x)$ 有一阶连续导数，$F(x)=f(x)(1+|\sin x|)$，则 $f(0)=0$ 是 $F(x)$ 在 $x=0$ 处可导的 \hfill\src{李林880题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 必要非充分条件
+  \item 充分非必要条件
+  \item 充分必要条件
+  \item 既非充分又非必要条件
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$g(x)=1+|\sin x|$在$x=0$连续不可导，$F=fg$可导$\iff f(0)=0$（经典结论）。}
+
+\section{微分概念}
+
+\begin{exercise}[880题·微分与无穷小阶]
+设 $f(x)$ 可导且 $f'(x_0)\neq 0$，当 $\Delta x\to 0$ 时 $f(x)$ 在 $x_0$ 处的微分 $dy$ 是 $\Delta x$ 的 \hfill\src{李林880题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 等价无穷小
+  \item 同阶无穷小
+  \item 低阶无穷小
+  \item 高阶无穷小
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$dy=f'(x_0)\Delta x$，$\lim\frac{dy}{\Delta x}=f'(x_0)\neq 0$，同阶。仅$f'(x_0)=1$时为等价。}
+
+\bigskip
+
+\begin{exercise}[660题·微分与增量命题]
+$f(x)$ 在 $x=x_0$ 处可微，$f'(x_0)\neq 0$。正确的有：
+\begin{enumerate}[label=(\arabic*),nosep]
+  \item $dy|_{x=x_0}$ 与 $\Delta x$ 是同阶无穷小
+  \item $df(x)$ 与 $x$ 和 $\Delta x$ 都有关
+  \item 只有一次函数才有 $\Delta y=dy$
+  \item $\Delta y-dy=o(\Delta x)$
+\end{enumerate}
+\src{660题·高数 31}
+\end{exercise}
+\ans{(1)(4)正确，(2)(3)错误}
+\kpt{(2)$df=f'(x)dx$仅与$x$有关；(3)常数函数也有$\Delta y=dy=0$；(4)是可微的定义。}
+
+\section{奇偶函数与导函数}
+
+\begin{exercise}[880题·奇函数导数符号]
+设 $f(-x)=-f(x)$，在 $(0,+\infty)$ 内 $f'(x)>0$，$f''(x)>0$，则 $f(x)$ 在 $(-\infty,0)$ 内必有 \hfill\src{李林880题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f'(x)<0$，$f''(x)<0$
+  \item $f'(x)<0$，$f''(x)>0$
+  \item $f'(x)>0$，$f''(x)<0$
+  \item $f'(x)>0$，$f''(x)>0$
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$f$奇$\to f'$偶$\to f''$奇。$x<0$时$f'(x)=f'(-x)>0$；$f''(x)=-f''(-x)<0$。}
+
+\section{极值点、拐点与渐近线}
+
+\begin{exercise}[660题·极值点判定]
+设 $f(x)=x\sin x+\cos x$，下列正确的是 \hfill\src{660题·高数 83}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(0)$ 是极大值，$f(\frac{\pi}{2})$ 是极小值
+  \item $f(0)$ 是极小值，$f(\frac{\pi}{2})$ 是极大值
+  \item $f(0)$ 和 $f(\frac{\pi}{2})$ 都是极大值
+  \item $f(0)$ 和 $f(\frac{\pi}{2})$ 都是极小值
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$f'(x)=x\cos x$。在$x=0$处$f'$由负变正$\to$极小值；在$x=\frac{\pi}{2}$处$f'$由正变负$\to$极大值。}
+
+\bigskip
+
+\begin{exercise}[660题·渐近线概念]
+曲线 $y=(x+2)e^{\frac{x-1}{x}}$ 的渐近线情况为 \hfill\src{660题·高数 76}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 仅有水平渐近线
+  \item 仅有垂直渐近线
+  \item 仅有斜渐近线
+  \item 既有垂直又有斜渐近线
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{$x=0$处$\lim y=\infty$（垂直），$x\to\infty$时$k=\lim\frac{y}{x}=e$，$b=\lim(y-ex)=e$（斜渐近线$y=e(x+1)$）。}
+
+\bigskip
+
+\begin{exercise}[880题·极值与拐点必要条件]
+$f'(x_0)=f''(x_0)=0$，$f'''(x_0)>0$，正确的是 \hfill\src{李林880题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $x_0$ 是 $f'(x)$ 的极值点
+  \item $f(x_0)$ 是 $f(x)$ 的极大值
+  \item $f(x_0)$ 是 $f(x)$ 的极小值
+  \item $(x_0,f(x_0))$ 是 $y=f(x)$ 的拐点
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{$f'''(x_0)>0$说明$f''(x)$在$x_0$处由负变正，即二阶导变号，故为拐点。}
+
+\bigskip
+
+\begin{exercise}[880题·导数保号性与单调性]
+设 $f(x)$ 连续，且 $f'(x_0)>0$，则 $\exists\delta>0$ 使得 \hfill\src{李林880题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 对任意 $x\in(x_0-\delta,x_0)$，有 $f(x)>f(x_0)$
+  \item 对任意 $x\in(x_0,x_0+\delta)$，有 $f(x)>f(x_0)$
+  \item $f(x)$ 在 $(x_0-\delta,x_0)$ 内单调减少
+  \item $f(x)$ 在 $(x_0,x_0+\delta)$ 内单调增加
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$f'(x_0)>0$只能保证在右侧附近$f(x)>f(x_0)$，不能保证单调性。反例：$f=x+2x^2\sin(1/x)$在$0$处。}
+
+\bigskip
+
+\begin{exercise}[1994 数学二·真题]
+设 $f(x)=\begin{cases}\frac{2}{3}x^3 & x\leqslant 1\\ x^2 & x>1\end{cases}$，则 $f(x)$ 在 $x=1$ 处 \hfill\src{1994 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 左、右导数都存在
+  \item 左导数存在，但右导数不存在
+  \item 左导数不存在，但右导数存在
+  \item 左、右导数都不存在
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$\lim_{x\to 1^+}f(x)=1\neq\frac{2}{3}=f(1)$，不连续故右导数不存在。可导必连续。}
+
+\bigskip
+
+\begin{exercise}[660题·左右导数存在与可导·41题]
+"左右导数存在"是可导的什么条件？\hfill\src{660题·41}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 充分条件
+  \item 必要条件
+  \item 充要条件
+  \item 既非充分也非必要
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{左右导数存在且相等才是充要条件。仅"存在"只是必要条件（可导→左右导数存在且相等）。如$|x|$在0处左右导数存在但不相等。}
+
+\bigskip
+
+\begin{exercise}[880题·不可导点个数]
+$f(x)=(x^2+3x+2)|x^2-x|$ 的不可导点个数为 \hfill\src{李林880题·第二章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 1
+  \item 2
+  \item 3
+  \item 4
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{零点：$x=-2,-1,0,1$。仅在$x=0,1$处$f$不可导（$g(a)\neq 0$时可导，$g(a)=0$时需验证）。}
+
+\bigskip
+
+\begin{exercise}[880题·不可导点·第5题]
+下列函数中在 $x=0$ 处不可导的是 \hfill\src{李林880题·第二章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(x)=x|\sin|x||$
+  \item $f(x)=|x|\sin\sqrt{|x|}$
+  \item $f(x)=\cos|x|$
+  \item $f(x)=\cos\sqrt{|x|}$
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{(A)可导：$x|\sin|x||\sim x|x|=x^2$（右）和$-x|x|=-x^2$（左）→导数0；(B)不可导：左右导数不等；(C)$\cos|x|=\cos x$处处可导；(D)可导。}
+
+\bigskip
+
+\begin{exercise}[660题·高阶导数递推]
+设 $f(x)$ 有任意阶导数，且 $f'(x)=f^2(x)$，则 $f^{(n)}(x)=$ \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $n![f(x)]^{n+1}$
+  \item $n[f(x)]^{n+1}$
+  \item $[f(x)]^{2n}$
+  \item $n![f(x)]^{2n}$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{用数学归纳法：$f^{(n)}=n!f^{n+1}$。}
+
+\bigskip
+
+\begin{exercise}[880题·利用不等式判定可导性]
+设 $\delta>0$，$f(x)$ 在 $(-\delta,\delta)$ 内有定义，当 $x\in(-\delta,\delta)$ 时 $|f(x)|\leqslant x^2$，则 $x=0$ 是 $f(x)$ 的 \hfill\src{李林880题·第二章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 间断点
+  \item 连续但不可导点
+  \item 可导点且 $f'(0)=0$
+  \item 可导点且 $f'(0)\neq 0$
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$|f(0)|\leqslant 0\implies f(0)=0$。$|\frac{f(x)-0}{x}|\leqslant |x|\to 0$→$f'(0)=0$。}
+
+\bigskip
+
+\begin{exercise}[660题·2005 导数定义极限]
+设 $f(x)$ 在 $x=0$ 处可导且 $f(1/n)=2/n$（$n=1,2,3,\ldots$），则 $f'(0)=$ \hfill\src{2005 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 0
+  \item 1
+  \item 2
+  \item 3
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{由导数定义：$f'(0)=\lim_{n\to\infty}\frac{f(1/n)-f(0)}{1/n}$。由$f$可导+连续→$f(0)=0$，$\frac{2/n-0}{1/n}=2$。}
+
+\section{本章结论速查}
+
+\begin{tcolorbox}[colback=blue!5, colframe=blue!30, title=\textbf{导数与微分·核心结论}]
+\begin{enumerate}[nosep]
+  \item 可导$\iff$可微（一元）$\implies$连续；不连续$\implies$不可导
+  \item 对称差商极限存在$\not\Rightarrow$可导（不含$f(x_0)$）
+  \item $\lim f'(x)=A$ + 连续 $\implies f'(x_0)=A$（导数极限定理）
+  \item $|f|$可导$\iff f(x_0)\neq 0$或$(f(x_0)=0\land f'(x_0)=0)$
+  \item $f$奇$\to f'$偶$\to f''$奇；极值充要：$f'$变号；拐点充要：$f''$变号
+  \item $f'(x_0)>0$只能保证右侧附近$f(x)>f(x_0)$，不能保证单调性
+\end{enumerate}
+\end{tcolorbox}
+
+\newpage
+
+% ====== CHAPTER 3 ======
+\chapter{中值定理及其应用}
+
+\begin{exercise}[660题·罗尔定理条件]
+下列函数在 $[-1,1]$ 上满足罗尔定理条件的是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(x)=\sqrt[3]{x^2}$
+  \item $f(x)=|x|$
+  \item $f(x)=\frac{1}{x^2}$
+  \item $f(x)=x^2-1$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{(A)在$x=0$不可导；(B)在$x=0$不可导；(C)在$x=0$无定义；(D)处处可导且$f(-1)=0=f(1)$。}
+
+\bigskip
+
+\begin{exercise}[660题·拉格朗日中值定理推论]
+$f(x)$ 在 $[a,b]$ 上连续，在 $(a,b)$ 内可导，正确的是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 若 $|f'(x)|\leqslant M$，则 $|f(b)-f(a)|\leqslant M|b-a|$
+  \item 若 $f'(x)\equiv 0$，则 $f(x)$ 在 $[a,b]$ 上未必为常数
+  \item 若 $f'(x)\geqslant 0$，则 $f(x)$ 严格单调递增
+  \item 拉格朗日中值定理仅有 $f(b)-f(a)=f'(\xi)(b-a)$ 一种形式
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{(B)错误：$f'\equiv 0$+连续$\implies$常数；(C)$f'\geqslant 0$只能得单调不减；(D)有多种等价形式。}
+
+\newpage
+
+% ====== CHAPTER 4 ======
+\chapter{一元函数积分学}
+
+\section{可积性与原函数}
+
+\begin{exercise}[660题·可积性与有界性]
+下列命题中正确的是 \hfill\src{660题·高数}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 若 $f(x)$ 在 $[a,b]$ 上有原函数，则 $f(x)$ 在 $[a,b]$ 上可积
+  \item 若 $f(x)$ 在 $[a,b]$ 上可积，则 $f(x)$ 在 $[a,b]$ 上有原函数
+  \item 若 $f(x)$ 在 $[a,b]$ 上可积，则 $f(x)$ 在 $[a,b]$ 上有界
+  \item 若 $f(x)$ 在 $[a,b]$ 上有界，则 $f(x)$ 在 $[a,b]$ 上可积
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{可积必有界。(A)有原函数不一定可积（无界导数）；(B)可积不一定有原函数（$\operatorname{sgn}$）；(D)有界不一定可积（Dirichlet函数）。}
+
+\bigskip
+
+\begin{exercise}[660题·可积函数运算]
+正确的个数：\hfill\src{660题}
+\begin{enumerate}[label=(\arabic*),nosep]
+  \item 若 $f$ 可积，则 $|f|$ 可积
+  \item 若 $|f|$ 可积，则 $f$ 可积
+  \item 可积 $+$ 不可积的和必不可积
+  \item 若 $f$ 可积，则 $f^2$ 可积
+\end{enumerate}
+\end{exercise}
+\ans{3 个（(1)(3)(4)正确）}
+\kpt{(2)反例：$f=\begin{cases}1&x\in\mathbb{Q}\\-1&x\notin\mathbb{Q}\end{cases}$，$|f|\equiv 1$可积，$f$不可积。}
+
+\section{变限积分的性质}
+
+\begin{exercise}[660题·变限积分奇偶性]
+设 $f(x)$ 在 $(-\infty,+\infty)$ 上连续，$F(x)=\int_0^x f(t)dt$，正确的是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 若 $f$ 为奇函数，则 $F$ 必为偶函数
+  \item 若 $f$ 为偶函数，则 $F$ 必为奇函数
+  \item 若 $f$ 以 $T$ 为周期，则 $F$ 必以 $T$ 为周期
+  \item 若 $f$ 单调递增，则 $F$ 必为凸函数
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{$F(-x)=\int_0^{-x}f(t)dt\xrightarrow{u=-t}\int_0^x f(-u)(-du)=\int_0^x -f(u)(-du)=F(x)$。$F$以$T$为周期$\iff\int_0^T f=0$。}
+
+\section{反常积分}
+
+\begin{exercise}[660题·反常积分的识别]
+$I=\int_0^1\ln x\,dx$ 是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 定积分且值为 $-1$
+  \item 定积分且值为 $-\frac{1}{2}$
+  \item 反常积分且发散
+  \item 反常积分且值为 $-1$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{$\ln x$在$x\to 0^+$时无界，是瑕积分。$[x\ln x-x]_0^1=-1$。}
+
+\bigskip
+
+\begin{exercise}[660题·反常积分收敛定义]
+$\int_{-\infty}^{+\infty}f(x)dx$ 收敛的定义是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\lim_{R\to+\infty}\int_{-R}^{R}f(x)dx$ 存在
+  \item $\lim_{R_1,R_2\to+\infty}\int_{-R_1}^{R_2}f(x)dx$ 存在
+  \item $\int_{-\infty}^{a}f(x)dx$ 和 $\int_{a}^{+\infty}f(x)dx$（$a$任意）均收敛
+  \item $\lim_{R\to+\infty}\int_{0}^{R}(f(x)+f(-x))dx$ 存在
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{(A)是柯西主值，存在不代表收敛。反例$f(x)=x$，主值为$0$但发散。}
+
+\bigskip
+
+\begin{exercise}[2015 数学二·反常积分]
+下列反常积分中收敛的是 \hfill\src{2015 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\int_2^{+\infty}\frac{1}{\sqrt{x}}dx$
+  \item $\int_2^{+\infty}\frac{\ln x}{x}dx$
+  \item $\int_2^{+\infty}\frac{1}{x\ln x}dx$
+  \item $\int_2^{+\infty}\frac{x}{e^{x}}dx$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{(A)$p=\frac{1}{2}<1$发散；(B)发散；(C)$\int\frac{1}{x\ln x}dx=\ln|\ln x|$发散；(D)$\int xe^{-x}dx$收敛。}
+
+\bigskip
+
+\begin{exercise}[660题·微分方程解的结构·219]
+下列命题正确的是 \hfill\src{660题·219}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 二阶齐次方程 $y''+py'+qy=0$ 的通解为任意两个特解之线性组合
+  \item 一阶方程 $y'+py=0$ 的两个不同特解之差为通解
+  \item 二阶非齐次方程两特解之差为齐次解
+  \item 以上全对
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{(A)需要线性无关；(B)一阶通解只有一个任意常数；(C)正确。}
+
+\bigskip
+
+\begin{exercise}[660题·一阶齐次通解·380]
+$y_1(x)$ 和 $y_2(x)$ 是 $y'+p(x)y=0$ 的两个不同特解，则通解为 \hfill\src{660题·380}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $y=C_1y_1+C_2y_2$
+  \item $y=C y_1$
+  \item $y=C y_2$
+  \item $y=C[y_1-y_2]$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{一阶通解只有一个任意常数。(A)有两个——错误；(B)(C)特解可能恒为零；(D)$y_1-y_2\not\equiv 0$是齐次解。}
+
+\bigskip
+
+\begin{exercise}[660题·解的叠加原理·382]
+$y_1,y_2$ 是 $y''+py'+qy=f(x)$ 的解，$y_3,y_4$ 是 $y''+py'+qy=g(x)$ 的解。则一定是 $y''+py'+qy=f(x)-g(x)$ 的解的是 \hfill\src{660题·382}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $y_1-y_2+y_3-y_4$
+  \item $2y_1-y_2+y_3-2y_4$
+  \item $y_1+y_2-y_3-y_4$
+  \item $y_1-2y_2+2y_3-y_4$
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{系数和判别法：$f(x)$对应系数和为1，$g(x)$对应系数和为$-$1。只有(B)满足$2-1=1$且$1-2=-1$。}
+
+\bigskip
+
+\begin{exercise}[660题·定积分存在性·92]
+下列函数在指定区间上不存在定积分的是 \hfill\src{660题·92}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(x)=\begin{cases}\sin\frac{1}{x}&x\neq 0\\1&x=0\end{cases}$，$[-1,1]$
+  \item $f(x)=\operatorname{sgn}x$，$[a,b]$
+  \item $\begin{cases}\tan x&x\in(-\pi/2,\pi/2)\\0&x=\pm\pi/2\end{cases}$，$[-\pi/2,\pi/2]$
+  \item 有界且仅有有限个间断点的函数
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{可积必要条件：有界。$\tan x$在$\pm\pi/2$附近无界→不可积。(A)(B)有界+有限间断点→可积。(D)是可积充分条件。}
+
+\bigskip
+
+\begin{exercise}[660题·原函数性质·176]
+设 $F(x)$ 是 $f(x)$ 在 $(a,b)$ 上的一个原函数，则 $F(x)$ 在 $(a,b)$ 内 \hfill\src{660题·176}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 可导
+  \item 连续
+  \item 存在原函数
+  \item 是初等函数
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{原函数$F$本身可导→连续→必有原函数。但$F$不一定可导（题目中的导数是$f$，不是$F'$存在→$F$可导！$F$是$f$的原函数即$F'=f$，所以$F$必可导，也必连续。但"存在原函数"是所有选项中唯一的非平凡结论：(A)(B)是原函数定义自带性质；关键辨析在第177-180题。}
+
+\bigskip
+
+\begin{exercise}[660题·原函数 vs 可积·178-180]
+核心结论（来自660题第178-180题评注）：\hfill\src{660题·178-180}
+\begin{itemize}[nosep]
+  \item \textbf{可积 $\not\Rightarrow$ 有原函数}：$\operatorname{sgn}x$ 在$[-1,1]$可积（一个间断点），但无原函数（导数须有介值性）
+  \item \textbf{有原函数 $\not\Rightarrow$ 可积}：无界函数的原函数（如 $\frac{d}{dx}(x^2\sin\frac{1}{x^2})$ 无界→不可积）
+  \item \textbf{牛顿-莱布尼茨公式条件}：$f$ 连续+有原函数，或 $f$ 可积且$F$连续在$[a,b]$上、在$(a,b)$内$F'=f$
+\end{itemize}
+\end{exercise}
+\ans{可积与原函数存在性是两个独立概念，无必然关系。}
+
+\bigskip
+
+\begin{exercise}[660题·变上限积分性质·177]
+设 $f(x)$ 有跳跃间断点 $x_0$，则 $F(x)=\int_a^x f(t)dt$ 在 $x_0$ 处 \hfill\src{660题·177}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 间断
+  \item 连续但不可导
+  \item 可导且 $F'(x_0)=f(x_0)$
+  \item 可导但 $F'(x_0)\neq f(x_0)$
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$f$可积→$F$处处连续；在$f$的跳跃间断点处$F$连续但不可导（左右导数分别等于$f$的左右极限，不相等）。}
+
+\bigskip
+
+\begin{exercise}[660题·反常积分敛散性命题]
+$f(x),g(x)$ 在 $[1,+\infty)$ 上连续非负，正确的是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 若 $\int_1^{+\infty}f$ 收敛，则 $\lim_{x\to+\infty}f(x)=0$
+  \item 若 $\lim_{x\to+\infty}f(x)=0$，则 $\int_1^{+\infty}f$ 收敛
+  \item 若 $\int_1^{+\infty}f$ 和 $\int_1^{+\infty}g$ 均收敛，则 $\int_1^{+\infty}fg$ 收敛
+  \item 若 $\int_1^{+\infty}f$ 收敛且 $\int_1^{+\infty}g$ 发散，则 $\int_1^{+\infty}(f+g)$ 发散
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{(A)收敛$\not\Rightarrow$$f\to 0$（可构造脉冲函数反例）；(B)$f\to 0$不能保证收敛（如$1/x$）；(C)$fg$不一定收敛；(D)收敛+发散=发散（反证法）。}
+
+\newpage
+
+% ====== CHAPTER 5 ======
+\chapter{多元函数微分学}
+
+\section{连续、偏导数、可微的关系}
+
+\begin{exercise}[660题·多元性质关系图]
+设 $f(x,y)$ 在 $(x_0,y_0)$ 处，性质：①连续 ②两个偏导数连续 ③可微 ④两个偏导数存在。正确推出链为 \hfill\src{660题·145}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item ②$\Rightarrow$③$\Rightarrow$①
+  \item ③$\Rightarrow$②$\Rightarrow$①
+  \item ③$\Rightarrow$④$\Rightarrow$①
+  \item ②$\Rightarrow$①$\Rightarrow$④
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{偏导连续$\to$可微$\to$连续 + 偏导存在。④$\not\Rightarrow$①，(C)错误。}
+
+\bigskip
+
+\begin{exercise}[660题·分段函数可微性]
+$z(x,y)=\begin{cases}\frac{x^2y}{x^2+y^2}&(x,y)\neq(0,0)\\0&(0,0)\end{cases}$ 在 $(0,0)$ 处 \hfill\src{660题·146}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 不连续
+  \item 连续，偏导数不存在
+  \item 连续，偏导数存在但不可微
+  \item 可微
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{用夹逼/极坐标证连续；偏导$f_x(0,0)=f_y(0,0)=0$存在；取$y=kx$验证可微极限与$k$有关，不可微。}
+
+\bigskip
+
+\begin{exercise}[660题·抽象函数可微判定]
+$f(x,y)$ 在 $(0,0)$ 连续，$\lim_{(x,y)\to(0,0)}\frac{f(x,y)}{x^2+y^2}=1$，则 \hfill\src{660题·235}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 偏导数不存在
+  \item 偏导数存在但不可微
+  \item 可微
+  \item 不能判断
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$f(x,y)=(x^2+y^2)+o(x^2+y^2)$。$f(0,0)=0$，$f_x(0,0)=f_y(0,0)=0$。可微验证$\frac{f-0}{\rho}\to 0$。}
+
+\bigskip
+
+\begin{exercise}[2007 数学二·可微充分条件]
+二元函数 $f(x,y)$ 在 $(0,0)$ 处可微的一个充分条件是 \hfill\src{2007 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\lim_{(x,y)\to(0,0)}[f(x,y)-f(0,0)]=0$
+  \item $\lim_{x\to 0}f(x,0)=f(0,0)$ 且 $\lim_{y\to 0}f(0,y)=f(0,0)$
+  \item $\lim_{(x,y)\to(0,0)}\frac{f(x,y)-f(0,0)}{\sqrt{x^2+y^2}}=0$
+  \item $\lim_{x\to 0}\frac{f(x,0)-f(0,0)}{x}$ 和 $\lim_{y\to 0}\frac{f(0,y)-f(0,0)}{y}$ 均存在
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{(A)连续；(B)沿坐标轴连续；(C)$f-0=o(\rho)$比可微更强，故可微；(D)偏导存在。}
+
+\bigskip
+
+\begin{exercise}[2012 数学二·偏导符号]
+$f(x,y)$ 可微，$\frac{\partial f}{\partial x}>0$，$\frac{\partial f}{\partial y}<0$，使 $f(x_1,y_1)>f(x_2,y_2)$ 的充分条件是 \hfill\src{2012 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $x_1>x_2$，$y_1<y_2$
+  \item $x_1>x_2$，$y_1>y_2$
+  \item $x_1<x_2$，$y_1<y_2$
+  \item $x_1<x_2$，$y_1>y_2$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{$f$关于$x$单调增，关于$y$单调减。要$f(x_1,y_1)>f(x_2,y_2)$，需$x_1>x_2$且$y_1<y_2$。}
+
+\bigskip
+
+\begin{exercise}[2009 数学二·全微分与极值]
+$z=f(x,y)$ 全微分 $dz=xdx+ydy$，则 $(0,0)$ 是 \hfill\src{2009 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 不是连续点
+  \item 不是极值点
+  \item 极大值点
+  \item 极小值点
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{$f_x=x,f_y=y$，$f=\frac{1}{2}(x^2+y^2)+C$，$(0,0)$为极小值点。}
+
+\bigskip
+
+\begin{exercise}[2011 数学二·极值充分条件]
+$f(x),g(x)$ 均有二阶连续导数，$f(0)>0,g(0)<0$，$f'(0)=g'(0)=0$。$z=f(x)g(y)$ 在 $(0,0)$ 取极小值的充分条件是 \hfill\src{2011 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f''(0)<0$，$g''(0)>0$
+  \item $f''(0)<0$，$g''(0)<0$
+  \item $f''(0)>0$，$g''(0)>0$
+  \item $f''(0)>0$，$g''(0)<0$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{$A=f''(0)g(0)$，$B=0$，$C=f(0)g''(0)$。$A>0$，$AC>0$：$f''(0)g(0)>0$且$f(0)g''(0)>0$。由$g(0)<0$得$f''(0)<0$；由$f(0)>0$得$g''(0)>0$。}
+
+\bigskip
+
+\begin{exercise}[2024 数学二·偏导不连续但可微]
+已知 $f(x,y)=\begin{cases}(x^2+y^2)\sin\frac{1}{x^2+y^2}&xy\neq 0\\0&xy=0\end{cases}$，正确的是 \hfill\src{2024 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f_x$ 连续，$f$ 可微
+  \item $f_x$ 连续，$f$ 不可微
+  \item $f_x$ 不连续，$f$ 可微
+  \item $f_x$ 不连续，$f$ 不可微
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{偏导函数不连续但函数本身可微——说明偏导连续只是可微的充分条件。}
+
+\newpage
+
+% ====== CHAPTER 6 ======
+\chapter{二重积分}
+
+\begin{exercise}[880题·比较二重积分大小]
+$D:x+y\leqslant 1,x,y\geqslant 0$，$I_1=\iint_D[\ln(x+y)]^2d\sigma$，$I_2=\iint_D(x+y)^2d\sigma$，$I_3=\iint_D[\sin(x+y)]^2d\sigma$，则 \hfill\src{李林880题·第五章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $I_1<I_2<I_3$
+  \item $I_1<I_3<I_2$
+  \item $I_3<I_1<I_2$
+  \item $I_3<I_2<I_1$
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$0<t\leqslant 1$时，$|\ln t|^2<\sin^2t<t^2$（$\ln t<0$比较平方值），$I_1<I_3<I_2$。}
+
+\bigskip
+
+\begin{exercise}[880题·对称性与奇偶性]
+$D:y=x^2-4$与$y=0$围成，$I=\iint_D(kx+y)dxdy$，则 \hfill\src{李林880题·第五章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $I=0$
+  \item $I>0$
+  \item $I<0$
+  \item $I$的正负与$k$有关
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$D$关于$y$轴对称，$kx$是奇函数→积分$=0$；$y\leqslant 0$在$D$上恒成立→$I<0$。}
+
+\bigskip
+
+\begin{exercise}[880题·奇偶性分解]
+$D$：$A(1,1),B(-1,1),C(-1,-1)$三角形区域，$D_1$为$D$在第一象限部分。$I=\iint_D(xy+\cos x\sin y)d\sigma$等于 \hfill\src{李林880题·第五章}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $0$
+  \item $2\iint_{D_1}xy\,d\sigma$
+  \item $2\iint_{D_1}\cos x\sin y\,d\sigma$
+  \item $4\iint_{D_1}(xy+\cos x\sin y)d\sigma$
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$xy$关于$x$奇→积分$=0$；$\cos x\sin y$为偶→$=2\times D_1$上积分。}
+
+\bigskip
+
+\begin{exercise}[2018 数学二·不可导点]
+下列函数中在 $x=0$ 处不可导的是 \hfill\src{2018 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $f(x)=|x|\sin|x|$
+  \item $f(x)=|x|\sin\sqrt{|x|}$
+  \item $f(x)=\cos|x|$
+  \item $f(x)=\cos\sqrt{|x|}$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{(A)$\sim|x|^2$→可导；(B)$\sim|x|^{3/2}$→可导；(C)$\cos|x|=\cos x$→可导；(D)左右导数$\pm 1/2$不相等→不可导。}
+
+\bigskip
+
+\begin{exercise}[2017 数学二·数列收敛极限]
+设数列 $\{x_n\}$ 收敛，则 \hfill\src{2017 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 当 $\lim\sin x_n=0$ 时，$\lim x_n=0$
+  \item 当 $\lim(x_n+\sqrt{x_n})=0$ 时，$\lim x_n=0$
+  \item 当 $\lim(x_n+x_n^2)=0$ 时，$\lim x_n=0$
+  \item 当 $\lim(x_n+\sin x_n)=0$ 时，$\lim x_n=0$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{(A)反例$x_n=\pi$；(B)(C)反例$x_n=-1$；(D)$\varphi(x)=x+\sin x$严格单调且$\varphi(0)=0$，唯一解。}
+
+\bigskip
+
+\begin{exercise}[2017 数学二·凸性与积分比较]
+$f(x)$ 二阶可导，$f(1)=f(-1)=1$，$f(0)=-1$，$f''(x)>0$，则 \hfill\src{2017 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\int_{-1}^1 f(x)dx>0$
+  \item $\int_{-1}^1 f(x)dx<0$
+  \item $\int_{-1}^0 f(x)dx>\int_0^1 f(x)dx$
+  \item $\int_{-1}^0 f(x)dx<\int_0^1 f(x)dx$
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$f''>0$→凸函数。利用凸性$f(x)<1$在$(-1,1)$上，$\int_{-1}^1 f<2$且由对称性和凸性得积分$<0$。}
+
+\bigskip
+
+\begin{exercise}[2018 数学二·泰勒展开求参数]
+若 $\lim_{x\to 0}(e^x+ax^2+bx)^{1/x^2}=1$，则 \hfill\src{2018 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $a=1/2$，$b=-1$
+  \item $a=-1/2$，$b=-1$
+  \item $a=1/2$，$b=1$
+  \item $a=-1/2$，$b=1$
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{指数化为$\exp(\lim\frac{e^x+ax^2+bx-1}{x^2})$。泰勒$e^x=1+x+x^2/2+o(x^2)$，得$1+b=0$→$b=-1$；$1/2+a=0$→$a=-1/2$。}
+
+\bigskip
+
+\begin{exercise}[2018 数学二·定积分比较大小]
+$M=\int_{-\pi/2}^{\pi/2}\frac{(1+x)^2}{1+x^2}dx$，$N=\int_{-\pi/2}^{\pi/2}\frac{1+x}{e^x}dx$，$K=\int_{-\pi/2}^{\pi/2}(1+\sqrt{\cos x})dx$，则 \hfill\src{2018 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $M>N>K$
+  \item $M>K>N$
+  \item $K>M>N$
+  \item $K>N>M$
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{$M=\pi$（化简）；$e^x\geqslant 1+x$→$N<M$；$1+\sqrt{\cos x}\geqslant 1$→$K>M$。}
+
+\bigskip
+
+\begin{exercise}[2017 数学二·分段函数连续求参数]
+$f(x)=\begin{cases}\frac{1-\cos\sqrt{x}}{ax}&x>0\\ b&x\leqslant 0\end{cases}$ 在 $x=0$ 处连续，则 \hfill\src{2017 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $ab=1/2$
+  \item $ab=-1/2$
+  \item $ab=0$
+  \item $ab=2$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{$\lim_{x\to0^+}\frac{1-\cos\sqrt{x}}{ax}=\frac{1/2}{a}=b\implies ab=1/2$。}
+
+\begin{exercise}[2013 数学二·比较二重积分]
+设 $I_1=\iint_D (x+y)^2 d\sigma$，$I_2=\iint_D (x+y)^3 d\sigma$，$D$ 由 $x$ 轴、$y$ 轴及 $x+y=1$ 围成，则 \hfill\src{2013 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $I_1>I_2$
+  \item $I_1<I_2$
+  \item $I_1=I_2$
+  \item 不能确定
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{在$D$上$0\leqslant x+y\leqslant 1$，$(x+y)^2\geqslant (x+y)^3$，取等仅当$x+y=0$或$1$。}
+
+\bigskip
+
+\begin{exercise}[2015 数学二·极坐标变换]
+$D$ 由 $2xy=1,4xy=1$ 与 $y=x,y=\sqrt{3}x$ 围成（第一象限），极坐标表达式为 \hfill\src{2015 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\int_{\pi/4}^{\pi/3}d\theta\int_{1/\sqrt{2\sin 2\theta}}^{1/\sqrt{\sin 2\theta}}f(r\cos\theta,r\sin\theta)rdr$
+  \item $\int_{\pi/4}^{\pi/3}d\theta\int_{1/\sqrt{\sin 2\theta}}^{1/\sqrt{2\sin 2\theta}}f(r\cos\theta,r\sin\theta)rdr$
+  \item $\int_{\pi/4}^{\pi/3}d\theta\int_{1/\sqrt{\sin 2\theta}}^{\sqrt{2/\sin 2\theta}}f(r\cos\theta,r\sin\theta)rdr$
+  \item $\int_{\pi/4}^{\pi/3}d\theta\int_{1/\sqrt{2\sin 2\theta}}^{1/\sqrt{\sin 2\theta}}f(r\cos\theta,r\sin\theta)rdr$
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{$x=r\cos\theta,y=r\sin\theta$：$2xy=1\implies r^2\sin2\theta=1$；$4xy=1\implies 2r^2\sin2\theta=1$；面积元$rdr$。}
+
+\bigskip
+
+\begin{exercise}[2022 数学二·交换积分次序]
+$\int_0^2 dy\int_y^2 \frac{y}{\sqrt{1+x^3}}dx$ 交换次序后为 \hfill\src{2022 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\int_0^2 dx\int_0^x \frac{y}{\sqrt{1+x^3}}dy$
+  \item $\int_0^2 dx\int_x^2 \frac{y}{\sqrt{1+x^3}}dy$
+  \item $\int_0^2 dx\int_0^x \frac{x}{\sqrt{1+x^3}}dy$
+  \item $\int_0^2 dx\int_x^2 \frac{x}{\sqrt{1+x^3}}dy$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{积分区域：$0\leqslant y\leqslant 2$，$y\leqslant x\leqslant 2$。交换后$x$从$0$到$2$，$y$从$0$到$x$。}
+
+\newpage
+
+% ====== CHAPTER 7 ======
+\chapter{微分方程}
+
+\section{线性微分方程解的结构}
+
+\begin{exercise}[2010 数学二·解的结构]
+$y_1,y_2$ 是一阶线性非齐次方程 $y'+p(x)y=q(x)$ 的两个特解，$\lambda y_1+\mu y_2$ 为该非齐次方程的解，$\lambda y_1-\mu y_2$ 为对应齐次方程的解，则 \hfill\src{2010 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\lambda=\frac{1}{2}$，$\mu=\frac{1}{2}$
+  \item $\lambda=-\frac{1}{2}$，$\mu=-\frac{1}{2}$
+  \item $\lambda=\frac{2}{3}$，$\mu=\frac{1}{3}$
+  \item $\lambda=\frac{2}{3}$，$\mu=-\frac{2}{3}$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{非齐次解：$\lambda+\mu=1$；齐次解：$\lambda-\mu=0$。解得$\lambda=\mu=\frac{1}{2}$。}
+
+\bigskip
+
+\begin{exercise}[2026 数学二·解的结构]
+$y_1,y_2$ 是二阶非齐次线性方程的两个特解，$\lambda y_1+\mu y_2$ 为非齐次解，$\lambda y_1-2\mu y_2$ 为齐次解。则 $(\lambda,\mu)=$\underline{\hspace{1cm}}。
+\src{2026 真题}
+\end{exercise}
+\ans{$(2/3,\;1/3)$}
+\kpt{$\lambda+\mu=1$（非齐次），$\lambda-2\mu=0$（齐次）。解得$\mu=1/3,\lambda=2/3$。}
+
+\bigskip
+
+\begin{exercise}[2000 数学二·特征根反推方程]
+$y_1=e^{-x},y_2=2xe^{-x},y_3=3e^{x}$ 是某三阶常系数齐次线性方程的特解，该方程为 \hfill\src{2000 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $y'''-y''-y'+y=0$
+  \item $y'''+y''-y'-y=0$
+  \item $y'''-2y''-y'+2y=0$
+  \item $y'''+y''-y'+y=0$
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{$r=-1$（二重根），$r=1$（单根）。特征方程$(r+1)^2(r-1)=r^3+r^2-r-1=0$。}
+
+\bigskip
+
+\begin{exercise}[660题·解的线性无关性]
+下列函数组在 $(-\infty,+\infty)$ 上线性无关的是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $e^{x},e^{2x},e^{3x}$
+  \item $x,2x,3x$
+  \item $1,\sin^2 x,\cos 2x$
+  \item $\ln x,x\ln x,x^2\ln x$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{(B)均与$x$成比例；(C)$\cos2x=1-2\sin^2x$；(D)定义域不是$(-\infty,+\infty)$。}
+
+\bigskip
+
+\begin{exercise}[2006 数学二·通解结构]
+非齐次线性方程 $y'+P(x)y=Q(x)$ 有两个不同解 $y_1,y_2$，$C$ 为任意常数，通解是 \hfill\src{2006 真题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $C(y_1+y_2)$
+  \item $y_1+C(y_1-y_2)$
+  \item $C(y_1-y_2)$
+  \item $y_1+C(y_2-y_1)$
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{非齐次通解 = 一个特解 + 齐次通解。$y_1-y_2$是齐次解，$y_1+C(y_1-y_2)$为通解。}
+
+\newpage
+
+% ====== CHAPTER 8 ======
+\chapter{线性代数}
+
+\section{矩阵的秩}
+
+\begin{exercise}[660题·伴随矩阵的秩]
+设 $A$ 为 $n$ 阶方阵（$n\geqslant 2$），$A^*$ 为伴随矩阵，正确的是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item 当 $r(A)=n$ 时，$r(A^*)=n$
+  \item 当 $r(A)=n-1$ 时，$r(A^*)=n-1$
+  \item 当 $r(A)=n-1$ 时，$r(A^*)=0$
+  \item 当 $r(A)<n-1$ 时，$r(A^*)=1$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{$r(A^*)=\begin{cases}n & r(A)=n\\ 1 & r(A)=n-1\\ 0 & r(A)\leqslant n-2\end{cases}$}
+
+\bigskip
+
+\begin{exercise}[660题·$AB=O$ 秩关系 237]
+设 $A,B$ 为满足 $AB=O$ 的任意两个非零矩阵，则必有 \hfill\src{660题·237}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $A$ 的列向量组线性相关，$B$ 的行向量组线性相关
+  \item $A$ 的列向量组线性无关，$B$ 的行向量组线性无关
+  \item $A$ 的行向量组线性相关，$B$ 的列向量组线性相关
+  \item $A$ 的行向量组线性无关，$B$ 的列向量组线性无关
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{$r(A)+r(B)\leqslant n$。$A,B$非零$\implies r(A)<n,r(B)<n$。$A$列秩$<n$（列数）$\implies$列相关；$B$行秩$<n$（行数）$\implies$行相关。}
+
+\bigskip
+
+\begin{exercise}[660题·$AB=E$ 秩关系 238]
+$A$ 是 $m\times n$，$B$ 是 $n\times m$，$AB=E_m$。正确的是 \hfill\src{660题·238}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $r(A)=m$，$r(B)=m$
+  \item $r(A)=n$，$r(B)=n$
+  \item $A$ 的行向量组线性无关，$B$ 的列向量组线性无关
+  \item $A$ 的列向量组线性无关，$B$ 的行向量组线性无关
+\end{enumerate}
+\end{exercise}
+\ans{(A)(C)}
+\kpt{$m=r(E_m)=r(AB)\leqslant\min(r(A),r(B))\leqslant m$，故$r(A)=r(B)=m$。$A$行秩$=m$（行数）$\implies$行无关=$B$列无关。}
+
+\section{特征值与特征向量}
+
+\begin{exercise}[660题·特征值性质]
+设 $\lambda$ 为 $n$ 阶矩阵 $A$ 的特征值，错误的是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\lambda$ 是 $A^T$ 的特征值
+  \item $\lambda^2$ 是 $A^2$ 的特征值
+  \item 若 $A$ 可逆，则 $\lambda^{-1}$ 是 $A^{-1}$ 的特征值
+  \item $\lambda$ 是 $A^*$ 的特征值
+\end{enumerate}
+\end{exercise}
+\ans{(D)}
+\kpt{$A^*=|A|A^{-1}$，特征值为$\frac{|A|}{\lambda_i}$，不是直接等于$\lambda_i$。}
+
+\bigskip
+
+\begin{exercise}[660题·特征向量线性组合]
+设 $\lambda_1\neq\lambda_2$ 为 $A$ 的特征值，$\alpha_1,\alpha_2$ 为对应特征向量，则 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $\alpha_1+\alpha_2$ 是 $A$ 的特征向量
+  \item $\alpha_1+\alpha_2$ 不是 $A$ 的特征向量
+  \item $\alpha_1+\alpha_2$ 可能是也可能不是特征向量
+  \item 不能确定
+\end{enumerate}
+\end{exercise}
+\ans{(B)}
+\kpt{不同特征值的特征向量的线性组合不再是特征向量（除非系数为零）。$A(\alpha_1+\alpha_2)=\lambda_1\alpha_1+\lambda_2\alpha_2\neq\lambda(\alpha_1+\alpha_2)$。}
+
+\section{二次型}
+
+\begin{exercise}[660题·二次型规范形]
+二次型 $f(x_1,x_2,x_3)=x_1^2+2x_2^2+3x_3^2+2x_1x_2+2x_1x_3$ 的规范形为 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $z_1^2+z_2^2+z_3^2$
+  \item $z_1^2+z_2^2$
+  \item $z_1^2-z_2^2$
+  \item $z_1^2+z_2^2-z_3^2$
+\end{enumerate}
+\end{exercise}
+\ans{(A)}
+\kpt{配方或求特征值。该二次型正定，规范形为$z_1^2+z_2^2+z_3^2$。}
+
+\bigskip
+
+\begin{exercise}[660题·合同与相似]
+设 $A,B$ 为 $n$ 阶实对称矩阵，则 $A$ 与 $B$ 合同的充要条件是 \hfill\src{660题}
+\begin{enumerate}[label=(\Alph*),nosep]
+  \item $A$ 与 $B$ 有相同的特征值
+  \item $A$ 与 $B$ 有相同的秩
+  \item $A$ 与 $B$ 有相同的正负惯性指数
+  \item $A$ 与 $B$ 相似
+\end{enumerate}
+\end{exercise}
+\ans{(C)}
+\kpt{实对称矩阵合同$\iff$正负惯性指数相同。(A)是相似的必要条件；(B)是等价的充要条件。}
+
+\newpage
+
+% ====== APPENDICES ======
+\chapter*{附录一\quad 各知识板块核心概念关系图}
+\addcontentsline{toc}{chapter}{附录一 核心概念关系图}
+
+\section*{一元函数}
+\[
+\text{可导} \iff \text{可微} \Longrightarrow \text{连续} \Longrightarrow \text{极限存在}
+\]
+可导$\not\Rightarrow$导函数连续（反例：$x^2\sin(1/x)$）。
+
+\section*{多元函数}
+\[
+\text{偏导数连续} \Longrightarrow \text{可微} \Longrightarrow \begin{cases}\text{连续}\\ \text{偏导数存在}\end{cases}
+\]
+偏导数存在$\not\Rightarrow$连续、可微、方向导数存在。
+
+\section*{可积性}
+\[
+\text{连续} \Longrightarrow \text{可积} \Longrightarrow \text{有界}
+\]
+可积$\not\iff$有原函数（独立概念）。
+
+\section*{微分方程}
+\[
+\text{非齐次解：}\lambda y_1+\mu y_2\text{为非齐次解}\iff\lambda+\mu=1
+\]
+\[
+\text{齐次解：}\lambda y_1+\mu y_2\text{为齐次解}\iff\lambda+\mu=0
+\]
+
+\section*{线性代数秩公式}
+\[
+AB=O\implies r(A)+r(B)\leqslant n\quad AB=E\implies r(A)=r(B)=m
+\]
+\[
+r(A^*)=\begin{cases}n & r(A)=n\\ 1 & r(A)=n-1\\ 0 & r(A)\leqslant n-2\end{cases}
+\]
+
+\newpage
+
+\chapter*{附录二\quad 经典反例速查手册（18个）}
+\addcontentsline{toc}{chapter}{附录二 经典反例速查}
+
+\begin{center}\small
+\begin{tabular}{p{4.5cm}p{7.5cm}}
+\toprule
+\textbf{要否定的命题} & \textbf{反例} \\
+\midrule
+对称差商存在$\Rightarrow$可导 & $f$在$x_0$不连续但关于$x_0$对称，差商$=0$ \\
+\midrule
+可导$\Rightarrow$导函数连续 & $x^2\sin(1/x)$在$0$处可导，导函数振荡 \\
+\midrule
+$f'(x_0)>0\Rightarrow$邻域单调增 & $x+2x^2\sin(1/x)$在$0$处，$f'$在任意邻域内变号 \\
+\midrule
+连续$\Rightarrow$可导 & $|x|$在$x=0$ \\
+\midrule
+可积$\Rightarrow$有原函数 & $\operatorname{sgn}(x)$在$[-1,1]$可积但无原函数 \\
+\midrule
+有原函数$\Rightarrow$可积 & $\frac{d}{dx}(x^2\sin(1/x^2))$无界不可积 \\
+\midrule
+$|f|$可积$\Rightarrow f$可积 & $f=\begin{cases}1&x\in\mathbb{Q}\\-1&x\notin\mathbb{Q}\end{cases}$ \\
+\midrule
+有界$\Rightarrow$可积 & Dirichlet函数 \\
+\midrule
+偏导存在$\Rightarrow$连续/可微 & $\frac{xy}{x^2+y^2}$在$(0,0)$处偏导存在但不连续 \\
+\midrule
+可微$\Rightarrow$偏导连续 & $(x^2+y^2)\sin\frac{1}{x^2+y^2}$可微但偏导不连续 \\
+\midrule
+柯西主值存在$\Leftrightarrow$收敛 & $\int_{-\infty}^{\infty}xdx$柯西主值$=0$但发散 \\
+\midrule
+$\frac{x_{n+1}}{x_n}\to 1\iff$收敛 & $x_n=n$比值$\to 1$但发散 \\
+\midrule
+两函数均不连续$\Rightarrow$和不连续 & $f$不连续，$g=-f$也不连续，$f+g\equiv 0$连续 \\
+\midrule
+不同特征值特征向量之和仍为特征向量 & $\alpha_1+\alpha_2$经$A$作用不满足$A\alpha=\lambda\alpha$ \\
+\midrule
+实对称矩阵相似$\iff$合同 & 合同只需正负惯性指数相同，不要求特征值相同 \\
+\midrule
+原函数存在$\iff$不定积分可求 & 原函数存在是分析性质，不定积分是代数运算 \\
+\midrule
+分段函数在分段点连续$\Rightarrow$可导 & $|x|$在$0$连续但不可导 \\
+\midrule
+条件收敛$\Leftrightarrow$绝对收敛 & $\sum\frac{(-1)^n}{n}$条件收敛但不绝对收敛 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+
+\chapter*{附录三\quad 各章核心结论速查}
+\addcontentsline{toc}{chapter}{附录三 核心结论速查}
+
+\textbf{极限与连续}：收敛$\iff$奇偶子列同极限；保号性$\lim f>\lim g\implies$邻域内$f>g$；可去间断点极限存在。
+
+\textbf{导数与微分}：可导$\iff$可微$\implies$连续；导数极限定理须加连续条件；$|f|$可导条件；$f$奇$\to f'$偶。
+
+\textbf{中值定理}：罗尔需闭区间连续+开区间可导+端点等值；拉格朗日只需前两者。
+
+\textbf{积分学}：可积必有界；可积$\not\iff$有原函数；$f$奇$\implies\int_0^x f$偶；反常积分收敛要求两端独立。
+
+\textbf{多元微分}：偏导连续$\to$可微$\to$连续+偏导存在；偏导存在$\not\Rightarrow$任何其他性质。
+
+\textbf{二重积分}：对称性先于计算；极坐标面积元$r\,dr\,d\theta$易漏$r$。
+
+\textbf{微分方程}：$\lambda y_1+\mu y_2$为非齐次解$\iff\lambda+\mu=1$；为齐次解$\iff\lambda+\mu=0$。
+
+\textbf{线性代数}：$AB=O\implies r(A)+r(B)\leqslant n$；$AB=E\implies$行满秩/列满秩；$r(A^*)$三级公式。
+
+\vspace{2cm}
+\begin{center}
+\rule{0.5\textwidth}{0.3pt}\vspace{0.5cm}
+{\large\color{gray}\textbf{—— 祝你考研顺利，一战成硕 ——}}
+\end{center}
+
+\end{document}

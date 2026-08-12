@@ -5,6 +5,7 @@
 """
 
 import os
+import re
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm, mm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -21,11 +22,22 @@ from reportlab.platypus.doctemplate import PageTemplate
 import json
 
 # ============================================================
-# 注册中文字体
+# 注册字体（含数学符号字体 STIX Two Math）
 # ============================================================
 SONGTI_PATH = "/System/Library/Fonts/Supplemental/Songti.ttc"
 HEITI_PATH = "/System/Library/AssetsV2/com_apple_MobileAsset_Font8/53fe5be564086fefc7523ccd0a31200acf92e0e5.asset/AssetData/STHEITI.ttf"
 KAITI_PATH = "/System/Library/AssetsV2/com_apple_MobileAsset_Font8/88d6cc32a907955efa1d014207889413890573be.asset/AssetData/Kaiti.ttc"
+STIX_MATH_PATH = "/System/Library/Fonts/Supplemental/STIXTwoText.ttf"  # STIX text font with math support
+
+# Register math font first (for Unicode math symbols like ∫, ∑, ∮, ∬, ∭, ∂)
+if os.path.exists(STIX_MATH_PATH):
+    try:
+        pdfmetrics.registerFont(TTFont('STIXTwoMath', STIX_MATH_PATH))
+        HAS_MATH_FONT = True
+    except:
+        HAS_MATH_FONT = False
+else:
+    HAS_MATH_FONT = False
 
 # Try to use macOS system fonts
 if os.path.exists(SONGTI_PATH):
@@ -57,11 +69,13 @@ except:
 FONT_BODY = 'SongtiSC'
 FONT_HEITI = 'STHeiti'
 FONT_BOLD = 'SongtiSC-Bold'
+FONT_MATH = 'STIXTwoMath' if HAS_MATH_FONT else 'SongtiSC'
 
 # Check if fonts registered
 from reportlab.pdfbase.pdfmetrics import _fonts
 registered = list(_fonts.keys())
-print(f"Registered fonts: {[f for f in registered if any(k in f.lower() for k in ['song', 'hei', 'ping', 'stso', 'stso'])]}")
+print(f"Registered fonts: {[f for f in registered if any(k in f.lower() for k in ['song', 'hei', 'stix', 'stso'])]}")
+print(f"Math font available: {HAS_MATH_FONT}")
 
 # Fallback chain
 if 'SongtiSC' not in registered:
@@ -78,7 +92,10 @@ if 'SongtiSC' not in registered:
 if 'STHeiti' not in registered:
     FONT_HEITI = FONT_BOLD
 
-print(f"Using fonts: body={FONT_BODY}, heiti={FONT_HEITI}, bold={FONT_BOLD}")
+if not HAS_MATH_FONT:
+    FONT_MATH = FONT_BODY
+
+print(f"Using fonts: body={FONT_BODY}, heiti={FONT_HEITI}, bold={FONT_BOLD}, math={FONT_MATH}")
 
 # ============================================================
 # 题目数据（按分类整理）
@@ -941,65 +958,64 @@ def build_styles():
     styles['title'] = ParagraphStyle(
         'title',
         fontName=FONT_HEITI,
-        fontSize=18,
-        leading=26,
+        fontSize=22,
+        leading=32,
         alignment=TA_CENTER,
-        spaceAfter=8*mm,
+        spaceAfter=10*mm,
     )
 
     styles['subtitle'] = ParagraphStyle(
         'subtitle',
         fontName=FONT_BODY,
-        fontSize=10,
-        leading=15,
+        fontSize=12,
+        leading=18,
         alignment=TA_CENTER,
-        spaceAfter=10*mm,
-        textColor=HexColor('#666666'),
+        spaceAfter=12*mm,
+        textColor=HexColor('#555555'),
     )
 
     styles['category'] = ParagraphStyle(
         'category',
         fontName=FONT_HEITI,
-        fontSize=14,
-        leading=20,
-        spaceBefore=8*mm,
-        spaceAfter=5*mm,
+        fontSize=16,
+        leading=24,
+        spaceBefore=10*mm,
+        spaceAfter=6*mm,
         textColor=COLOR_CATEGORY,
     )
 
     styles['problem_header'] = ParagraphStyle(
         'problem_header',
         fontName=FONT_BOLD,
-        fontSize=11,
-        leading=16,
-        spaceBefore=4*mm,
-        spaceAfter=1*mm,
+        fontSize=13,
+        leading=20,
+        spaceBefore=6*mm,
+        spaceAfter=2*mm,
     )
 
     styles['problem_body'] = ParagraphStyle(
         'problem_body',
         fontName=FONT_BODY,
-        fontSize=11,
-        leading=18,
+        fontSize=13,
+        leading=22,
         alignment=TA_JUSTIFY,
-        spaceAfter=3*mm,
+        spaceAfter=4*mm,
         leftIndent=5*mm,
     )
 
     styles['answer_space'] = ParagraphStyle(
         'answer_space',
         fontName=FONT_BODY,
-        fontSize=9,
-        leading=14,
-        textColor=HexColor('#aaaaaa'),
+        fontSize=13,
+        leading=22,
         leftIndent=5*mm,
     )
 
     styles['footer'] = ParagraphStyle(
         'footer',
         fontName=FONT_BODY,
-        fontSize=8,
-        leading=10,
+        fontSize=9,
+        leading=12,
         alignment=TA_CENTER,
         textColor=HexColor('#999999'),
     )
@@ -1062,18 +1078,18 @@ def build_pdf(output_path):
             # Problem body
             story.append(Paragraph(p['text'], styles['problem_body']))
 
-            # Answer space: roughly proportional to score value
+            # Answer space: blank area proportional to score
             try:
                 score_val = int(p['score'])
             except:
                 score_val = 10
-            # lines of answer space
-            answer_lines = max(6, score_val * 2)
-            space_lines = '<br/>'.join(['_' * 90] * answer_lines)
-            story.append(Paragraph(
-                f'<br/>{space_lines}<br/><br/>',
-                styles['answer_space']
-            ))
+            # Blank answer space height proportional to score
+            answer_height = score_val * 1.1 * cm
+            # Add a faint separator line then blank space
+            story.append(HRFlowable(
+                width="100%", thickness=0.3, color=HexColor('#dddddd'),
+                spaceBefore=3*mm, spaceAfter=2*mm))
+            story.append(Spacer(1, answer_height))
 
         # Don't page break after the last section
         if category != list(PROBLEMS.keys())[-1]:

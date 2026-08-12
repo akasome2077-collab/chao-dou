@@ -2,723 +2,526 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>天气 · zz & 噜噜</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,200;14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+<title>✨ 曹璐</title>
 <style>
-  :root {
-    --glass-high: rgba(255,255,255,0.10);
-    --glass-mid: rgba(255,255,255,0.05);
-    --glass-low: rgba(255,255,255,0.02);
-    --glass-border: rgba(255,255,255,0.10);
-    --glass-border-high: rgba(255,255,255,0.16);
-    --text-primary: #fff;
-    --text-secondary: rgba(255,255,255,0.68);
-    --text-tertiary: rgba(255,255,255,0.40);
-    --accent: #7ab8f0;
-    --love: #f0a0b8;
-    --love-soft: rgba(240,160,184,0.35);
-    --rain-accent: #8db8e0;
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 22px;
-  }
+:root{--gold:#c9a74b;--gold-light:#e8d48b;--rose:#d4a0a0;--bg:#07060a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);width:100vw;height:100vh;height:100dvh;overflow:hidden;font-family:'Songti SC','Noto Serif SC','STSong','SimSun',serif;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+canvas{position:fixed;top:0;left:0;pointer-events:none}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+.cine{position:fixed;top:0;left:0;width:100%;height:100%;z-index:50;pointer-events:none;transition:opacity .6s}
+.cine::before,.cine::after{content:'';position:fixed;left:0;width:100%;background:#000;transition:height .8s cubic-bezier(.4,0,.2,1)}
+.cine::before{top:0;height:0}.cine::after{bottom:0;height:0}
+.cine.on::before,.cine.on::after{height:max(6vh,44px)}
 
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    min-height: 100vh; min-height: 100dvh;
-    background: linear-gradient(175deg, #1a1a28 0%, #1e2238 40%, #181a2c 100%);
-    color: var(--text-primary); overflow-x: hidden;
-    transition: background 1.2s ease;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+#loader{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s,visibility .8s}
+#loader.hide{opacity:0;visibility:hidden}
+.loader-diamond{width:36px;height:36px;background:var(--gold);transform:rotate(45deg);animation:ld .9s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes ld{0%{transform:rotate(45deg) scale(.75);opacity:.4}50%{transform:rotate(45deg) scale(1.2);opacity:1}100%{transform:rotate(45deg) scale(.75);opacity:.4}}
 
-  canvas#bgCanvas {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 0; opacity: 0.65;
-  }
+.scene{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:10;opacity:0;pointer-events:none;transition:opacity 1s cubic-bezier(.4,0,.2,1)}
+.scene.active{opacity:1;pointer-events:auto}
+.scene .inner{text-align:center;padding:32px}
 
-  .app {
-    position: relative; z-index: 1;
-    max-width: 440px; margin: 0 auto; padding: 18px 20px 48px;
-    display: flex; flex-direction: column; gap: 14px;
-    min-height: 100vh; min-height: 100dvh;
-  }
+/* Text pages (S1-S6) */
+/* Lyrics pages — staggered line-by-line reveal */
+.lyric-wrap{text-align:center}
+.lyric-stagger{display:block;font-size:clamp(1.2rem,3vw,1.8rem);color:rgba(245,240,235,.82);font-weight:300;letter-spacing:clamp(2px,1.2vw,6px);line-height:2.4;opacity:0;animation:lyricUp .9s var(--d,.2s) cubic-bezier(.22,.61,.36,1) forwards}
+.lyric-stagger b{color:var(--rose);font-weight:500}
+@keyframes lyricUp{from{opacity:0;filter:blur(4px);transform:translateY(36px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
 
-  .glass {
-    background: linear-gradient(160deg, var(--glass-high) 0%, var(--glass-mid) 40%, var(--glass-low) 100%);
-    border: 1px solid var(--glass-border);
-    border-top: 1px solid var(--glass-border-high);
-    backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
-  }
+.s1-text{font-size:clamp(3.5rem,10vw,7rem);font-weight:700;color:#f5f0eb;letter-spacing:clamp(12px,4vw,28px);animation:txtIn 1.4s .3s cubic-bezier(.22,.61,.36,1) both}
 
-  /* ── Love Header ── */
-  .love-header {
-    text-align: center; padding-top: 20px;
-    animation: fadeUp 0.7s ease-out;
-  }
-  .love-header .names {
-    display: flex; align-items: center; justify-content: center; gap: 14px;
-    font-size: 20px; font-weight: 300; letter-spacing: 2px;
-  }
-  .love-header .names .heart-icon {
-    width: 28px; height: 28px; opacity: 0.85;
-    animation: heartPulse 2s ease-in-out infinite;
-  }
-  @keyframes heartPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.25); }
-  }
-  .love-header .sub {
-    font-size: 12px; font-weight: 400; color: var(--text-tertiary);
-    margin-top: 6px; letter-spacing: 1px;
-  }
+/* I love you page */
+.ily-text{font-size:clamp(4rem,13vw,9rem);font-weight:900;color:var(--rose);letter-spacing:clamp(6px,3vw,18px);text-shadow:0 0 80px rgba(212,160,160,.5);animation:ilyPulse 2.2s .5s ease-in-out infinite}
+@keyframes ilyPulse{0%,100%{text-shadow:0 0 60px rgba(212,160,160,.4);transform:scale(1)}40%{text-shadow:0 0 120px rgba(212,160,160,.7),0 0 200px rgba(201,167,75,.3);transform:scale(1.03)}}
 
-  /* ── Segmented Control ── */
-  .segmented {
-    display: flex; background: rgba(255,255,255,0.06);
-    border-radius: var(--radius-sm); padding: 3px;
-    backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
-    position: relative;
-    border: 1px solid rgba(255,255,255,0.07);
-  }
-  .segmented .slider {
-    position: absolute; top: 3px; height: calc(100% - 6px);
-    width: calc(50% - 3px);
-    background: linear-gradient(160deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.08) 100%);
-    border-radius: 8px; transition: transform 0.35s cubic-bezier(0.22, 0.9, 0.3, 1);
-    z-index: 0;
-    border: 1px solid rgba(255,255,255,0.12);
-    border-top: 1px solid rgba(255,255,255,0.18);
-  }
-  .segmented .slider.right { transform: translateX(calc(100% + 3px)); }
-  .segmented button {
-    flex: 1; padding: 10px 14px; border: none; background: transparent;
-    color: rgba(255,255,255,0.65); font-size: 14px; font-weight: 500;
-    cursor: pointer; position: relative; z-index: 1; border-radius: 8px;
-    transition: color 0.3s; letter-spacing: 0.3px;
-    font-family: inherit;
-  }
-  .segmented button.active { color: #fff; }
+/* 3D containers */
+.scene canvas{border-radius:16px;box-shadow:0 0 80px rgba(201,167,75,.08)}
 
-  /* ── Twin Cards ── */
-  .twin {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-    animation: fadeUp 0.7s ease-out 0.06s both;
-  }
-  .twin-card {
-    border-radius: var(--radius-lg); padding: 16px 12px 14px; text-align: center;
-    cursor: pointer; transition: all 0.35s ease;
-    position: relative; overflow: hidden;
-  }
-  .twin-card.active { border-color: rgba(240,160,184,0.35); box-shadow: 0 0 24px rgba(240,160,184,0.08); }
-  .twin-card .twin-name {
-    font-size: 12px; font-weight: 600; color: var(--text-tertiary);
-    letter-spacing: 1.2px; margin-bottom: 6px;
-  }
-  .twin-card .twin-temp {
-    font-size: 42px; font-weight: 200; letter-spacing: -3px;
-    line-height: 1; font-feature-settings: "tnum";
-  }
-  .twin-card .twin-icon { margin: 4px 0; }
-  .twin-card .twin-cond { font-size: 13px; font-weight: 400; color: var(--accent); }
-  .twin-card .twin-hilo {
-    font-size: 12px; font-weight: 400; color: var(--text-secondary);
-    margin-top: 4px;
-  }
-  .twin-card .twin-indicator {
-    position: absolute; top: 8px; right: 8px;
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--love); opacity: 0; transition: opacity 0.3s;
-  }
-  .twin-card.active .twin-indicator { opacity: 1; }
+/* Proposal */
+.s9-q{font-size:clamp(1.8rem,4.5vw,2.8rem);color:#f5f0eb;font-weight:300;letter-spacing:clamp(3px,2vw,10px);margin-bottom:48px}
+.s9-btns{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;animation:txtIn 1s .5s both}
+.s9-btn{display:inline-block;padding:18px 42px;border-radius:60px;border:1.5px solid var(--gold);background:rgba(201,167,75,.04);color:var(--gold);font-family:inherit;font-size:1.1rem;font-weight:500;cursor:pointer;letter-spacing:5px;transition:all .4s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-decoration:none}
+@media(hover:hover){.s9-btn:hover{background:var(--gold);color:#1a1a1a;transform:scale(1.04);box-shadow:0 0 60px rgba(201,167,75,.4)}}
+.s9-btn:active{background:var(--gold);color:#fff;transform:scale(.94);box-shadow:0 0 60px rgba(201,167,75,.5)}
 
-  /* ── Mood Banner ── */
-  .mood {
-    border-radius: var(--radius-lg); padding: 14px 18px; text-align: center;
-    animation: fadeUp 0.7s ease-out 0.10s both;
-  }
-  .mood .mood-emoji { font-size: 28px; margin-bottom: 4px; }
-  .mood .mood-text { font-size: 13px; font-weight: 400; line-height: 1.6; color: rgba(255,255,255,0.85); }
-  .mood .mood-highlight { color: var(--love); font-weight: 500; }
+/* Fireworks */
+.fw-title{font-size:clamp(2rem,5vw,3.5rem);color:#f5f0eb;font-weight:700;letter-spacing:clamp(4px,2vw,8px);opacity:0;animation:fwIn 1.5s 1s forwards}
+.fw-sub{color:rgba(245,240,235,.35);font-size:1rem;margin-top:14px;letter-spacing:5px;opacity:0;animation:fwIn 1.5s 2s forwards}
+@keyframes fwIn{to{opacity:1}}
 
-  /* ── Section label ── */
-  .section-label {
-    font-size: 11px; font-weight: 600; color: var(--text-tertiary);
-    letter-spacing: 1.4px; padding: 0 10px; margin-top: 2px;
-  }
+.float-el{position:fixed;pointer-events:none;z-index:25;animation:floatUp 3.5s ease-out forwards}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(.4) rotate(0deg)}20%{opacity:1;transform:translateY(-12vh) scale(1.2) rotate(15deg)}100%{opacity:0;transform:translateY(-52vh) scale(.5) rotate(-25deg)}}
 
-  /* ── Hourly ── */
-  .hourly-wrap {
-    border-radius: var(--radius-lg); padding: 18px 8px 14px; overflow: hidden;
-    animation: fadeUp 0.7s ease-out 0.12s both;
-  }
-  .hourly-scroll {
-    display: flex; gap: 2px; overflow-x: auto;
-    scrollbar-width: none; -ms-overflow-style: none;
-    padding-bottom: 2px;
-  }
-  .hourly-scroll::-webkit-scrollbar { display: none; }
-  .hourly-item {
-    flex: 0 0 60px; text-align: center; padding: 6px 2px;
-    border-radius: 14px; transition: background 0.2s;
-  }
-  .hourly-item:hover { background: rgba(255,255,255,0.04); }
-  .hourly-item .time {
-    font-size: 11px; font-weight: 500; color: var(--text-tertiary);
-    margin-bottom: 10px; letter-spacing: 0.2px;
-  }
-  .hourly-item .icon-svg {
-    display: block; margin: 0 auto 10px; opacity: 0.85;
-  }
-  .hourly-item .temp {
-    font-size: 15px; font-weight: 500; letter-spacing: -0.3px;
-  }
-  .hourly-item .rain-dot {
-    font-size: 10px; font-weight: 500; color: var(--rain-accent);
-    margin-top: 3px; opacity: 0.85;
-  }
+/* Envelope */
+.env-wrap{display:flex;align-items:center;justify-content:center;flex-direction:column}
+.env-body{position:relative;width:clamp(240px,55vw,340px);height:clamp(160px,38vw,230px);background:linear-gradient(170deg,#faf7f2,#ebe0d0);border-radius:8px;box-shadow:0 30px 80px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
+.env-flap{position:absolute;top:0;left:0;width:100%;height:55%;background:linear-gradient(170deg,#ebe0d0,#d8c8a8);clip-path:polygon(0 0,50% 100%,100% 0);transform-origin:top center;z-index:2;border-radius:8px 8px 0 0}
+.env-flap.open{animation:flapOpen 1s .5s cubic-bezier(.4,0,.55,1) forwards}
+@keyframes flapOpen{0%{transform:perspective(600px) rotateX(0)}100%{transform:perspective(600px) rotateX(-175deg)}}
+.env-msg{font-size:clamp(1.3rem,3vw,1.8rem);color:#5a4030;font-weight:400;letter-spacing:3px;opacity:0;animation:envMsgIn .8s 1.2s forwards}
+@keyframes envMsgIn{to{opacity:1}}
 
-  /* ── Detail Cards ── */
-  .cards {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  }
-  .card {
-    border-radius: var(--radius-lg); padding: 18px 18px 16px;
-    animation: fadeUp 0.7s ease-out var(--delay, 0.2s) both;
-    overflow: hidden; position: relative;
-  }
-  .card.full { grid-column: 1 / -1; }
-  .card .card-label {
-    font-size: 11px; font-weight: 600; color: var(--text-tertiary);
-    letter-spacing: 1.2px; margin-bottom: 8px;
-  }
-  .card .card-value {
-    font-size: 28px; font-weight: 300; letter-spacing: -1.2px;
-    line-height: 1.15; font-feature-settings: "tnum";
-  }
-  .card .card-value.small {
-    font-size: 20px; letter-spacing: -0.6px;
-  }
-  .card .card-sub {
-    font-size: 12px; font-weight: 400; color: var(--text-secondary);
-    margin-top: 6px; line-height: 1.6;
-  }
-
-  /* ── Date Card ── */
-  .date-card {
-    border-radius: var(--radius-lg); padding: 16px 18px;
-    animation: fadeUp 0.7s ease-out 0.14s both;
-    border-left: 2px solid var(--love-soft);
-  }
-  .date-card .date-label {
-    font-size: 11px; font-weight: 600; color: var(--love);
-    letter-spacing: 1.2px; margin-bottom: 8px;
-  }
-  .date-card .date-idea {
-    font-size: 14px; font-weight: 400; line-height: 1.7; color: rgba(255,255,255,0.88);
-  }
-
-  /* ── Loading ── */
-  .loading-area {
-    display: flex; justify-content: center; align-items: center;
-    padding: 48px; opacity: 0.35;
-  }
-  .spinner {
-    width: 22px; height: 22px; border: 2px solid rgba(255,255,255,0.12);
-    border-top-color: rgba(255,255,255,0.45); border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* Ring emoji */
+.ring-emoji{font-size:clamp(8rem,28vw,18rem);animation:ringPulse 1.8s ease-in-out infinite;filter:drop-shadow(0 0 60px rgba(255,215,0,.5)) drop-shadow(0 0 120px rgba(255,180,50,.3))}
+@keyframes ringPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 50px rgba(255,215,0,.4)) drop-shadow(0 0 100px rgba(255,180,50,.2))}50%{transform:scale(1.08);filter:drop-shadow(0 0 80px rgba(255,215,0,.7)) drop-shadow(0 0 160px rgba(255,180,50,.45))}}
 </style>
 </head>
 <body>
 
-<canvas id="bgCanvas"></canvas>
+<div id="loader"><div class="loader-diamond"></div></div>
+<div class="cine" id="cine"></div>
+<canvas id="bg"></canvas>
+<canvas id="fw-canvas"></canvas>
 
-<div class="app">
-  <!-- Love Header -->
-  <div class="love-header">
-    <div class="names">
-      <span>zz</span>
-      <svg class="heart-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--love)">
-        <path d="M24 42C24 42 6 28 6 16C6 9.5 11.5 5 16.5 5C20 5 22.5 7 24 10C25.5 7 28 5 31.5 5C36.5 5 42 9.5 42 16C42 28 24 42 24 42Z"/>
-      </svg>
-      <span>噜噜</span>
-    </div>
-    <div class="sub" id="loveDistance">青岛 ↔ 济南</div>
-  </div>
+<!-- S1: Envelope -->
+<div class="scene" id="s1"><div class="inner"><div class="env-wrap"><div class="env-body" id="envBody"><div class="env-flap" id="envFlap"></div></div></div></div></div>
 
-  <!-- Segmented -->
-  <div class="segmented" id="segmented">
-    <div class="slider" id="slider"></div>
-    <button data-loc="qingdao" class="active">市北区 · zz</button>
-    <button data-loc="jinan">长清区 · 噜噜</button>
-  </div>
+<!-- S2: 亲爱的小chao -->
+<div class="scene" id="s2"><div class="inner"><div class="s1-text">亲爱的小chao</div></div></div>
 
-  <!-- Twin Cards -->
-  <div class="twin" id="twin"></div>
+<!-- S3-S7: 5 lyric pages — staggered reveal -->
+<div class="scene" id="s3"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">记得那天 太阳压着平原</span>
+  <span class="lyric-stagger" style="--d:.9s">风慢慢吹 没有人掉眼泪</span>
+</div></div></div>
+<div class="scene" id="s4"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">一切好美 好到我可以不用说</span>
+  <span class="lyric-stagger" style="--d:.9s">金色的侧脸 踩着全白球鞋</span>
+</div></div></div>
+<div class="scene" id="s5"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">风继续吹 世界继续作业</span>
+  <span class="lyric-stagger" style="--d:.9s">那么确定 我知道那就是<b>你</b></span>
+</div></div></div>
+<div class="scene" id="s6"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">那一天你走进了我的生命</span>
+  <span class="lyric-stagger" style="--d:.9s">谢谢你 成为了我的<b>几分之几</b></span>
+</div></div></div>
+<div class="scene" id="s7"><div class="inner"><div class="lyric-wrap">
+  <span class="lyric-stagger" style="--d:.2s">闭上眼睛也能看见你</span>
+  <span class="lyric-stagger" style="--d:.9s">晴朗的<b>南方</b></span>
+</div></div></div>
 
-  <!-- Mood Banner -->
-  <div class="mood glass" id="mood"></div>
+<!-- S7: 我爱你 -->
+<div class="scene" id="s8"><div class="inner"><div class="ily-text">我 爱 你</div></div></div>
 
-  <!-- Suggested date -->
-  <div class="date-card glass" id="dateCard"></div>
+<!-- S9: Ring emoji -->
+<div class="scene" id="s9"><div class="inner"><div class="ring-emoji">💍</div></div></div>
 
-  <!-- Hourly -->
-  <div class="section-label">24 小时预报</div>
-  <div class="hourly-wrap glass" id="hourlyWrap">
-    <div class="hourly-scroll" id="hourlyScroll"></div>
-  </div>
+<!-- S9: 3D Rose VR -->
+<div class="scene" id="s10"><div id="rosevr"></div></div>
 
-  <!-- Detail Cards -->
-  <div class="cards" id="cards"></div>
-</div>
+<!-- S10: Proposal -->
+<div class="scene" id="s11"><div class="inner"><div class="s9-q">嫁给我，好吗？</div><div class="s9-btns"><button class="s9-btn" onclick="answer()">💍 我愿意</button><button class="s9-btn" onclick="answer()">💖 非常愿意</button></div></div></div>
+
+<!-- S11: Fireworks -->
+<div class="scene" id="s12"><div class="inner"><div class="fw-title">曹璐  💍  我爱你</div><div class="fw-sub">—— 来自永远爱你的 zz</div></div></div>
 
 <script>
-// ── Config ──
-const LOC = {
-  qingdao: { name:'市北区', fullName:'青岛市北区', lat:36.09, lon:120.38, user:'zz' },
-  jinan:   { name:'长清区', fullName:'济南长清区', lat:36.55, lon:116.75, user:'噜噜' }
-};
-const DISTANCE_KM = 295; // approximate Qingdao <-> Jinan
-let active = 'qingdao', cache = {};
+// ============================================================
+// GLOBALS
+// ============================================================
+let W = innerWidth, H = innerHeight;
+const dpr = Math.min(devicePixelRatio, 2);
+addEventListener('resize',()=>{W=innerWidth;H=innerHeight});
 
-// ── SVG Weather Icons ──
-function weatherSVG(code, size) {
-  const s = size || 48;
-  const info = WMO[code] || WMO[0];
-  const bg = info.bg;
-  const c = 'currentColor';
-  const sw = '1.2';
+const bgC=document.getElementById('bg'),bgX=bgC.getContext('2d');
+const fwC=document.getElementById('fw-canvas'),fwX=fwC.getContext('2d');
 
-  function make(inner) { return `<svg width="${s}" height="${s}" viewBox="0 0 48 48" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`; }
+function setCanvas(c,w,h){c.width=w*dpr;c.height=h*dpr;c.style.width=w+'px';c.style.height=h+'px'}
+setCanvas(bgC,W,H);setCanvas(fwC,W,H);
+addEventListener('resize',()=>{setCanvas(bgC,innerWidth,innerHeight);setCanvas(fwC,innerWidth,innerHeight)});
 
-  if (bg === 'sunny') {
-    return make(`<circle cx="24" cy="24" r="9"/><path d="M24 4v4 M24 40v4 M10.3 10.3l2.8 2.8 M34.9 34.9l2.8 2.8 M4 24h4 M40 24h4 M10.3 37.7l2.8-2.8 M34.9 13.1l2.8-2.8"/>`);
-  }
-  if (bg === 'cloudy' && (code === 1 || code === 2)) {
-    return make(`<circle cx="17" cy="18" r="7"/><path d="M17 7v3 M17 29v3 M6 18h3 M28 18h3 M9.5 9.5l2.1 2.1 M22.4 22.4l2.1 2.1"/><path d="M18 36 a8 8 0 0 1 0 -16 a10 10 0 0 1 18 4 a7 7 0 0 1 0 12 z"/>`);
-  }
-  if (bg === 'cloudy') {
-    return make(`<path d="M12 34 a9 9 0 0 1 0 -18 a13 13 0 0 1 24 4 a8 8 0 0 1 0 14 z"/>`);
-  }
-  if (bg === 'rain') {
-    return make(`<path d="M12 28 a9 9 0 0 1 0 -18 a13 13 0 0 1 24 4 a8 8 0 0 1 0 11 z"/><path d="M17 30 v7 M24 30 v7 M31 30 v7 M20.5 31 v6 M27.5 31 v6"/>`);
-  }
-  if (bg === 'thunder') {
-    return make(`<path d="M12 26 a9 9 0 0 1 0 -18 a13 13 0 0 1 24 4 a8 8 0 0 1 0 11 z"/><path d="M22 26 l4 -8 l-4 3 l5 -8"/>`);
-  }
-  if (bg === 'snow') {
-    return make(`<path d="M12 26 a9 9 0 0 1 0 -18 a13 13 0 0 1 24 4 a8 8 0 0 1 0 11 z"/><circle cx="16" cy="34" r="2.5"/><circle cx="22" cy="35" r="2.5"/><circle cx="28" cy="35" r="2.5"/><circle cx="34" cy="34" r="2.5"/><circle cx="19" cy="38" r="2.5"/><circle cx="25" cy="39" r="2.5"/><circle cx="31" cy="38" r="2.5"/>`);
-  }
-  if (bg === 'fog') {
-    return make(`<path d="M10 20 h28 M12 26 h24 M10 32 h28 M14 38 h20"/><path d="M16 24 h16" stroke-width="0.8" opacity="0.4"/><path d="M18 30 h12" stroke-width="0.8" opacity="0.4"/><path d="M15 36 h18" stroke-width="0.8" opacity="0.4"/>`);
-  }
-  return make(`<circle cx="24" cy="24" r="10"/><path d="M24 10v4 M24 34v4 M12 24h4 M32 24h4"/>`);
+// ============================================================
+// BACKGROUND STARS
+// ============================================================
+const stars=[];
+for(let i=0;i<200;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:.15+Math.random()*2.2,a:.1+Math.random()*.5,tw:Math.random()*Math.PI*2,ts:.4+Math.random()*3,vx:(Math.random()-.5)*.04,vy:(Math.random()-.5)*.04});
+const nebulae=[];
+for(let i=0;i<5;i++)nebulae.push({x:Math.random()*W,y:Math.random()*H,r:120+Math.random()*280,a:.008+Math.random()*.03,c:['#c9a74b','#d4a0a0','#7a8ab0','#a08060','#90a0b0'][i],vx:(Math.random()-.5)*.06,vy:(Math.random()-.5)*.04});
+
+(function bgLoop(){bgX.clearRect(0,0,bgC.width,bgC.height);const t=Date.now()*.001;
+for(const n of nebulae){n.x+=n.vx;n.y+=n.vy;if(n.x<-n.r)n.x=W+n.r;if(n.x>W+n.r)n.x=-n.r;if(n.y<-n.r)n.y=H+n.r;if(n.y>H+n.r)n.y=-n.r;const g=bgX.createRadialGradient(n.x*dpr,n.y*dpr,0,n.x*dpr,n.y*dpr,n.r*dpr);const ah=Math.floor(n.a*255).toString(16).padStart(2,'0');g.addColorStop(0,n.c+ah);g.addColorStop(.5,n.c+'08');g.addColorStop(1,'transparent');bgX.fillStyle=g;bgX.fillRect(0,0,bgC.width,bgC.height)}
+for(const s of stars){s.x+=s.vx;s.y+=s.vy;if(s.x<0)s.x=W;if(s.x>W)s.x=0;if(s.y<0)s.y=H;if(s.y>H)s.y=0;const f=s.a+.06*Math.sin(t*s.ts+s.tw);bgX.beginPath();bgX.arc(s.x*dpr,s.y*dpr,s.r*dpr,0,Math.PI*2);bgX.fillStyle=`rgba(245,240,235,${f})`;bgX.fill();if(s.r>1.2){bgX.beginPath();bgX.arc(s.x*dpr,s.y*dpr,s.r*3*dpr,0,Math.PI*2);bgX.fillStyle=`rgba(245,240,235,${f*.08})`;bgX.fill()}}
+requestAnimationFrame(bgLoop)})();
+
+// ============================================================
+// SCENE MANAGEMENT
+// ============================================================
+var cur=0;
+const scenes={};
+for(let i=1;i<=12;i++)scenes[i]=document.getElementById('s'+i);
+const cine=document.getElementById('cine');
+
+function go(from,to){
+  cine.classList.add('on');setTimeout(()=>cine.classList.remove('on'),900);
+  if(from)scenes[from].classList.remove('active');
+  scenes[to].classList.add('active');
+  cur=to;
+  if(to===1){setTimeout(()=>document.getElementById('envFlap').classList.add('open'),400)}
+  if(to===8)spawnFloatEls(60);
+  if(to===9){spawnFloatEls(30);setTimeout(()=>{if(cur===9)go(9,10)},6000)}
+  if(to===10){startRoseVR();}
+  if(to===11)spawnFloatEls(40);
+  if(to===12){stopRoseVR();startFireworks()}
 }
 
-// ── WMO Codes ──
-const WMO = {
-  0: { cond:'晴朗', bg:'sunny' }, 1: { cond:'大部晴朗', bg:'sunny' }, 2: { cond:'多云', bg:'cloudy' },
-  3: { cond:'阴天', bg:'cloudy' }, 45: { cond:'雾', bg:'fog' }, 48: { cond:'雾凇', bg:'fog' },
-  51: { cond:'小雨', bg:'rain' }, 53: { cond:'中雨', bg:'rain' }, 55: { cond:'大雨', bg:'rain' },
-  61: { cond:'小雨', bg:'rain' }, 63: { cond:'中雨', bg:'rain' }, 65: { cond:'大雨', bg:'rain' },
-  71: { cond:'小雪', bg:'snow' }, 73: { cond:'中雪', bg:'snow' }, 75: { cond:'大雪', bg:'snow' },
-  80: { cond:'阵雨', bg:'rain' }, 81: { cond:'中阵雨', bg:'rain' }, 82: { cond:'大阵雨', bg:'rain' },
-  95: { cond:'雷暴', bg:'thunder' }, 96: { cond:'雷暴冰雹', bg:'thunder' }, 99: { cond:'强雷暴', bg:'thunder' }
-};
-
-const BG = {
-  sunny:   ['#1a1628', '#201836', '#281e4a'],
-  cloudy:  ['#1a1a28', '#22243a', '#2c2e46'],
-  rain:    ['#141420', '#1a1a2a', '#181e2e'],
-  thunder: ['#12101e', '#18142c', '#1c163a'],
-  fog:     ['#1a222e', '#232c3a', '#2e3848'],
-  snow:    ['#18222e', '#212d3c', '#2c384a']
-};
-
-// ── API ──
-async function fetchW(key) {
-  const l = LOC[key];
-  const u = `https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}`
-    + `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,precipitation,rain,wind_speed_10m,uv_index`
-    + `&hourly=temperature_2m,precipitation_probability,weather_code,apparent_temperature,uv_index`
-    + `&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max`
-    + `&timezone=Asia/Shanghai&forecast_days=2`;
-  const r = await fetch(u);
-  if (!r.ok) throw Error('API');
-  return r.json();
+function spawnFloatEls(count){
+  const emojis=['✨','💫','🌟','💕','💖','💗','💝','🕊️','💎','🌸'];
+  for(let i=0;i<count;i++){const el=document.createElement('div');el.className='float-el';el.textContent=emojis[i%emojis.length];el.style.left=(2+Math.random()*96)+'vw';el.style.top=(30+Math.random()*50)+'vh';el.style.fontSize=(1+Math.random()*3.5)+'rem';el.style.animationDuration=(2.4+Math.random()*4)+'s';el.style.animationDelay=Math.random()*1.8+'s';document.body.appendChild(el);setTimeout(()=>el.remove(),6000)}
 }
 
-function w(code) { return WMO[code] || { cond:'未知', bg:'cloudy' }; }
-function fmt(t) { return Math.round(t) + '°'; }
+// ============================================================
+// BGM
+// ============================================================
+const bgm=document.createElement('audio');
+bgm.src='music.m4a';bgm.loop=true;bgm.preload='auto';bgm.volume=.6;document.body.appendChild(bgm);
+let musicOn=true;
+bgm.play().catch(()=>{musicOn=false;document.addEventListener('click',function r(){bgm.play();musicOn=true;document.removeEventListener('click',r)},{once:true})});
+</script>
 
-// ── Date Ideas ──
-function dateIdea(data1, data2) {
-  const c1 = w(data1.current.weather_code), c2 = w(data2.current.weather_code);
-  const bg1 = c1.bg, bg2 = c2.bg;
-  const t1 = data1.current.temperature_2m, t2 = data2.current.temperature_2m;
-  const anyWet = bg1 === 'rain' || bg1 === 'thunder' || bg2 === 'rain' || bg2 === 'thunder';
-  const anySnow = bg1 === 'snow' || bg2 === 'snow';
-  const allSunny = (bg1 === 'sunny' || bg1 === 'cloudy') && (bg2 === 'sunny' || bg2 === 'cloudy');
-  const avgT = (t1 + t2) / 2;
+<!-- ============================================================
+THREE.JS MODULE: Rose VR (S10)
+============================================================ -->
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-  if (anySnow) return {
-    emoji: '❄️', title: '初雪',
-    text: '如果在一起，想和你一起看雪。注意保暖，<span class="mood-highlight">围巾手套都带上</span>，别冻着了。'
-  };
-  if (anyWet) return {
-    emoji: '🌧️', title: '雨天',
-    text: '下雨天最适合宅在一起。<span class="mood-highlight">煮一锅热气腾腾的火锅</span>，窝在沙发上看电影，听雨声滴滴答答。'
-  };
-  if (allSunny && avgT >= 20 && avgT <= 28) return {
-    emoji: '🌸', title: '好天气',
-    text: '阳光正好，微风不燥。<span class="mood-highlight">一起去公园散步、野餐</span>，或者找一家有露台的咖啡馆发呆一整个下午。'
-  };
-  if (allSunny && avgT > 28) return {
-    emoji: '☀️', title: '夏日',
-    text: '夏天就是要一起吃冰淇淋！<span class="mood-highlight">去海边踩水、看日落</span>，或者找一家有空调的甜品店吃到饱。'
-  };
-  if (allSunny && avgT < 12) return {
-    emoji: '🍂', title: '微凉',
-    text: '天气凉凉的，<span class="mood-highlight">牵手散步然后把对方的手塞进自己口袋</span>。喝热巧克力，逛书店，简简单单就很暖。'
-  };
-  return {
-    emoji: '💛', title: '今天', text: '无论什么天气，<span class="mood-highlight">只要想到你</span>，就是好天气。照顾好自己，期待下次见面。'
-  };
-}
+// ============================================================
+// S10: 3D ROSE BOUQUET VR — premium detailed rose
+// ============================================================
+let roseData=null;
 
-// ── Mood message ──
-function moodMsg(data1, data2) {
-  const bg1 = w(data1.current.weather_code).bg, bg2 = w(data2.current.weather_code).bg;
-  const t1 = Math.round(data1.current.temperature_2m), t2 = Math.round(data2.current.temperature_2m);
-  const diff = Math.abs(t1 - t2);
+// High-poly realistic rose petal with complex 3D curvature
+function createPetalGeo(w, h, cu, crl){
+  const sw=16, sh=14; // high segment count for smooth curves
+  const shape=new THREE.Shape();
+  // Realistic obovate petal: narrow base, wide middle, rounded tip
+  shape.moveTo(0, -h*0.04);
+  shape.bezierCurveTo(w*0.22, h*0.02, w*0.54, h*0.06, w*0.88, h*0.22);
+  shape.bezierCurveTo(w*1.08, h*0.35, w*1.12, h*0.55, w*0.72, h*0.74);
+  shape.bezierCurveTo(w*0.35, h*0.92, w*0.05, h*1.0, 0, h*1.02);
+  shape.bezierCurveTo(-w*0.05, h*1.0, -w*0.35, h*0.92, -w*0.72, h*0.74);
+  shape.bezierCurveTo(-w*1.12, h*0.55, -w*1.08, h*0.35, -w*0.88, h*0.22);
+  shape.bezierCurveTo(-w*0.54, h*0.06, -w*0.22, h*0.02, 0, -h*0.04);
 
-  if (bg1 === bg2) {
-    if (bg1 === 'rain' || bg1 === 'thunder') return { emoji:'🌧️', msg:`两座城市都下着雨，<span class="mood-highlight">像在互相思念</span>。雨后总会天晴，我们总会相见。` };
-    if (bg1 === 'sunny') return { emoji:'☀️', msg:`两座城市都是晴天，<span class="mood-highlight">就像我们的心情一样明亮</span>。好好享受今天的好天气。` };
-    if (bg1 === 'snow') return { emoji:'❄️', msg:`两座城市都飘着雪，<span class="mood-highlight">同一片天空下</span>，雪花替我亲吻你。` };
-    return { emoji:'☁️', msg:`两座城市共享同一片天空。<span class="mood-highlight">虽然距离 ${DISTANCE_KM} 公里</span>，但心在一起。` };
+  const geo=new THREE.ShapeGeometry(shape, sw, sh);
+  const pa=geo.attributes.position;
+
+  // Apply complex 3D curvature
+  for(let i=0; i<pa.count; i++){
+    const x=pa.getX(i), y=pa.getY(i);
+    const t = (y/h + 0.04) / 1.06; // normalized 0..1 from base to tip
+    const rx = Math.abs(x/w);
+    // Cup curvature: strongest near base, decreases outward
+    let z = cu * Math.pow(t, 1.8) * (1 - rx*0.4) * (1 - rx);
+    // Backward curl near the tip edge
+    z -= crl * Math.pow(Math.max(0, t-0.45), 2.2) * Math.pow(rx, 2.5);
+    // Gentle wavy ruffle along edges
+    z += 0.012 * Math.sin(rx*12) * t * (1 - t*0.7);
+    pa.setZ(i, z);
   }
-  if (diff >= 8) return { emoji:'🌡️', msg:`温差 ${diff}°C，<span class="mood-highlight">记得根据温度添减衣物</span>。你那里是<span class="mood-highlight">${w(data1.current.weather_code).cond}</span>，也要照顾好自己。` };
-  if ((bg1==='rain'||bg1==='thunder')&&(bg2==='sunny'||bg2==='cloudy')) return { emoji:'🌈', msg:`zz 这边下雨，噜噜那边天晴。<span class="mood-highlight">你的笑容就是我的彩虹</span>，跨越风雨也能照亮我。` };
-  if ((bg2==='rain'||bg2==='thunder')&&(bg1==='sunny'||bg1==='cloudy')) return { emoji:'☂️', msg:`噜噜那边下雨了，zz 这边还是晴天。<span class="mood-highlight">好想把我的阳光分你一半</span>，出门记得带伞。` };
-  return { emoji:'💫', msg:`两座城市，两种天气，<span class="mood-highlight">但只有一种心情</span>——想你。<span class="mood-highlight">${DISTANCE_KM} 公里</span>不远，因为心没有距离。` };
+  geo.computeVertexNormals();
+  return geo;
 }
 
-// ── Clothing ──
-function clothing(temp, fl, code, uv) {
-  const t = fl != null ? fl : temp;
-  let travel = '', prot = [];
-  if (t >= 30) travel = '短袖 + 短裤/短裙，注意防暑降温';
-  else if (t >= 24) travel = '短袖 + 薄长裤，凉爽舒适';
-  else if (t >= 18) travel = '薄长袖/衬衫 + 长裤，可备薄外套';
-  else if (t >= 12) travel = '薄外套/卫衣 + 长裤';
-  else if (t >= 5) travel = '夹克/风衣 + 毛衣 + 长裤';
-  else if (t >= -5) travel = '厚外套/羽绒服 + 毛衣 + 保暖内衣';
-  else travel = '加厚羽绒服 + 毛衣 + 保暖内衣 + 围巾手套';
+// Vertex-colored petal material for gradient (dark at base → rich red at tip)
+function createPetalGeoWithColors(w, h, cu, crl, colorBase, colorTip){
+  const sw=16, sh=14;
+  const shape=new THREE.Shape();
+  shape.moveTo(0, -h*0.04);
+  shape.bezierCurveTo(w*0.22, h*0.02, w*0.54, h*0.06, w*0.88, h*0.22);
+  shape.bezierCurveTo(w*1.08, h*0.35, w*1.12, h*0.55, w*0.72, h*0.74);
+  shape.bezierCurveTo(w*0.35, h*0.92, w*0.05, h*1.0, 0, h*1.02);
+  shape.bezierCurveTo(-w*0.05, h*1.0, -w*0.35, h*0.92, -w*0.72, h*0.74);
+  shape.bezierCurveTo(-w*1.12, h*0.55, -w*1.08, h*0.35, -w*0.88, h*0.22);
+  shape.bezierCurveTo(-w*0.54, h*0.06, -w*0.22, h*0.02, 0, -h*0.04);
 
-  const info = w(code);
-  const wet = info.bg === 'rain' || info.bg === 'thunder';
-  const sunny = info.bg === 'sunny';
-  if (wet) prot.push('带雨伞');
-  if (uv >= 6) prot.push('涂防晒霜');
-  if (uv >= 4 && uv < 6) prot.push('建议防晒');
-  if (uv >= 3 && sunny) prot.push('戴墨镜');
-  if (t < 5) prot.push('注意保暖');
-  if (code >= 95) prot.push('注意避雷');
-  if (info.bg === 'fog') prot.push('注意行车安全');
-  if (prot.length === 0) prot.push('无需特别防护');
-  return { travel, protect: prot.join(' · ') };
+  const geo=new THREE.ShapeGeometry(shape, sw, sh);
+  const pa=geo.attributes.position;
+  const ca=new Float32Array(pa.count*3);
+
+  for(let i=0; i<pa.count; i++){
+    const x=pa.getX(i), y=pa.getY(i);
+    const t=(y/h+0.04)/1.06;
+    const rx=Math.abs(x/w);
+    let z=cu*Math.pow(t,1.8)*(1-rx*0.4)*(1-rx);
+    z-=crl*Math.pow(Math.max(0,t-0.45),2.2)*Math.pow(rx,2.5);
+    z+=0.012*Math.sin(rx*12)*t*(1-t*0.7);
+    pa.setZ(i,z);
+
+    // Color gradient: dark at base → tip color
+    const f=Math.pow(t, 0.6);
+    ca[i*3]=colorBase[0]+(colorTip[0]-colorBase[0])*f;
+    ca[i*3+1]=colorBase[1]+(colorTip[1]-colorBase[1])*f;
+    ca[i*3+2]=colorBase[2]+(colorTip[2]-colorBase[2])*f;
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(ca, 3));
+  geo.computeVertexNormals();
+  return geo;
 }
 
-// ── Rain gap ──
-function rainGap(hourly) {
-  const now = new Date(), times = hourly.time, probs = hourly.precipitation_probability;
-  for (let i = 0; i < times.length; i++) {
-    const t = new Date(times[i]);
-    if (t > now && probs[i] >= 40) {
-      const ms = t - now, h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
-      if (h===0 && m===0) return '即将下雨';
-      if (h===0) return `约 ${m} 分钟后`;
-      if (h<=1) return `约 ${h} 小时 ${m} 分钟后`;
-      return `约 ${h} 小时后`;
+function createRose(){
+  const g=new THREE.Group();
+
+  // Deep burgundy base, bright crimson-red tip
+  const base=[0.35, 0.02, 0.05];   // dark wine
+  const tip=[0.82, 0.08, 0.18];    // vivid red
+  const matPetal=new THREE.MeshStandardMaterial({color:'#cc2244', roughness:.42, metalness:.02, vertexColors:true});
+
+  // Many layers for realistic bloom — inner bud to open outer petals
+  const layers=[
+    // inner bud — tiny tight petals
+    {n:5, w:.08, h:.22, cu:.10, crl:.01, ang:.08, tilt:.12},
+    {n:6, w:.11, h:.30, cu:.14, crl:.02, ang:.16, tilt:.22},
+    {n:7, w:.15, h:.38, cu:.18, crl:.03, ang:.28, tilt:.34},
+    // mid bloom
+    {n:8, w:.20, h:.48, cu:.24, crl:.06, ang:.42, tilt:.48},
+    {n:9, w:.25, h:.56, cu:.28, crl:.09, ang:.56, tilt:.62},
+    {n:11, w:.30, h:.64, cu:.32, crl:.12, ang:.72, tilt:.74},
+    // outer petals — wide open
+    {n:12, w:.36, h:.72, cu:.34, crl:.16, ang:.88, tilt:.84},
+    {n:14, w:.42, h:.80, cu:.35, crl:.20, ang:1.02, tilt:.92},
+    {n:15, w:.48, h:.88, cu:.36, crl:.25, ang:1.18, tilt:.98},
+    {n:16, w:.54, h:.95, cu:.36, crl:.30, ang:1.36, tilt:1.05},
+  ];
+
+  layers.forEach(l=>{
+    for(let i=0; i<l.n; i++){
+      const geo=createPetalGeoWithColors(l.w, l.h, l.cu, l.crl, base, tip);
+      const petal=new THREE.Mesh(geo, matPetal);
+      const a=(i/l.n)*Math.PI*2 + (Math.random()-.5)*0.25;
+      petal.position.y=-l.h*0.06;
+      petal.rotation.z=Math.cos(a)*l.tilt;
+      petal.rotation.x=Math.sin(a)*l.tilt;
+      petal.rotation.y=a;
+      g.add(petal);
     }
-  }
-  return '未来 24 小时无雨';
-}
-
-// ── Canvas ──
-const canvas = document.getElementById('bgCanvas');
-const ctx = canvas.getContext('2d');
-let pts = [], wtype = 'cloudy', flash = 0, hearts = [];
-
-function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
-window.addEventListener('resize', resize); resize();
-
-function setBg(t) {
-  const c = BG[t] || BG.cloudy;
-  document.body.style.background = `linear-gradient(175deg, ${c[0]} 0%, ${c[1]} 45%, ${c[2]} 100%)`;
-}
-
-function mkP(type) {
-  const p = { type, x:Math.random()*canvas.width, y:-20, s:1, sz:1, op:0.3+Math.random()*0.4, d:0, wd:0, wb:0, ws:0, wa:0 };
-  if (type==='rain') { p.y=-30; p.s=7+Math.random()*10; p.sz=0.5+Math.random()*1.4; p.wd=1+Math.random()*1.8; }
-  if (type==='snow') { p.y=Math.random()*canvas.height; p.s=0.2+Math.random()*0.6; p.sz=1.5+Math.random()*3; p.wb=Math.random()*Math.PI*2; p.ws=0.005+Math.random()*0.02; p.wa=0.3+Math.random()*0.9; }
-  if (type==='beam') { p.x=Math.random()*canvas.width; p.y=Math.random()*canvas.height*0.55; p.sz=0.5+Math.random()*1.5; p.d=0.002+Math.random()*0.005; p.op=0.15+Math.random()*0.3; }
-  if (type==='cloud') { p.sz=35+Math.random()*65; p.s=0.06+Math.random()*0.22; p.y=Math.random()*canvas.height*0.4; p.x=-100+Math.random()*(canvas.width+200); p.op=0.04+Math.random()*0.10; }
-  if (type==='heart') { p.x=Math.random()*canvas.width; p.y=canvas.height+20; p.sz=4+Math.random()*10; p.s=0.15+Math.random()*0.5; p.op=0.08+Math.random()*0.18; p.wb=Math.random()*Math.PI*2; p.ws=0.006+Math.random()*0.025; p.wa=0.2+Math.random()*0.7; }
-  return p;
-}
-
-function drawHeart(x, y, size, alpha) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(size / 24, size / 24);
-  ctx.fillStyle = `rgba(240,160,184,${alpha})`;
-  ctx.beginPath();
-  ctx.moveTo(0, -8);
-  ctx.bezierCurveTo(-12, -16, -24, 0, 0, 16);
-  ctx.bezierCurveTo(24, 0, 12, -16, 0, -8);
-  ctx.fill();
-  ctx.restore();
-}
-
-function tick() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  const max = wtype==='rain'||wtype==='thunder'?120:wtype==='snow'?80:wtype==='sunny'?30:wtype==='cloudy'?20:wtype==='fog'?45:60;
-  const rate = wtype==='rain'?0.55:wtype==='thunder'?0.6:wtype==='snow'?0.35:wtype==='sunny'?0.10:wtype==='cloudy'?0.04:wtype==='fog'?0.18:0.35;
-
-  // Hearts always float
-  if (hearts.length < 18 && Math.random() < 0.025) hearts.push(mkP('heart'));
-
-  if (pts.length < max && Math.random() < rate) {
-    if (wtype==='rain'||wtype==='thunder') pts.push(mkP('rain'));
-    else if (wtype==='snow') pts.push(mkP('snow'));
-    else if (wtype==='sunny') pts.push(mkP('beam'));
-    else pts.push(mkP('cloud'));
-  }
-
-  if (wtype==='thunder' && Math.random()<0.003) flash=0.10+Math.random()*0.18;
-  flash*=0.87;
-  if (flash>0.007) { ctx.fillStyle=`rgba(255,255,255,${flash})`; ctx.fillRect(0,0,canvas.width,canvas.height); }
-
-  // Weather particles
-  for (let i=pts.length-1;i>=0;i--) {
-    const p=pts[i];
-    if (p.type==='rain') {
-      p.y+=p.s; p.x+=p.wd;
-      if (p.y>canvas.height+30||p.x>canvas.width+30) { p.y=-30; p.x=Math.random()*canvas.width; }
-      ctx.strokeStyle=`rgba(155,190,225,${p.op})`; ctx.lineWidth=p.sz;
-      ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-p.wd*0.45,p.y-16); ctx.stroke();
-    } else if (p.type==='snow') {
-      p.wb+=p.ws; p.y+=p.s; p.x+=Math.sin(p.wb)*p.wa;
-      if (p.y>canvas.height+15) { p.y=-15; p.x=Math.random()*canvas.width; }
-      ctx.fillStyle=`rgba(255,255,255,${p.op})`; ctx.beginPath(); ctx.arc(p.x,p.y,p.sz,0,Math.PI*2); ctx.fill();
-    } else if (p.type==='beam') {
-      p.op-=p.d;
-      if (p.op<=0) { pts.splice(i,1); continue; }
-      ctx.fillStyle=`rgba(255,210,130,${p.op})`; ctx.beginPath(); ctx.arc(p.x,p.y,p.sz,0,Math.PI*2); ctx.fill();
-    } else if (p.type==='cloud') {
-      p.x+=p.s;
-      if (p.x>canvas.width+150) p.x=-150;
-      const z=p.sz;
-      ctx.fillStyle=`rgba(188,202,218,${p.op})`;
-      ctx.beginPath(); ctx.ellipse(p.x,p.y,z,z*0.48,0,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(p.x-z*0.32,p.y+12,z*0.6,z*0.35,0,0,Math.PI*2); ctx.fill();
-    }
-  }
-
-  // Hearts
-  for (let i=hearts.length-1;i>=0;i--) {
-    const h=hearts[i];
-    h.wb+=h.ws; h.y-=h.s; h.x+=Math.sin(h.wb)*h.wa;
-    if (h.y<-30) { h.y=canvas.height+20; h.x=Math.random()*canvas.width; }
-    drawHeart(h.x, h.y, h.sz, h.op);
-  }
-
-  while (pts.length>max+40) pts.shift();
-  requestAnimationFrame(tick);
-}
-tick();
-
-function setWeather(type) { wtype=type; setBg(type); pts=[]; }
-
-// ── Render ──
-function renderTwin(data1, data2) {
-  const ct1 = data1.current, ct2 = data2.current;
-  const d1 = data1.daily, d2 = data2.daily;
-  const i1 = w(ct1.weather_code), i2 = w(ct2.weather_code);
-
-  document.getElementById('twin').innerHTML = `
-    <div class="twin-card glass${active==='qingdao'?' active':''}" data-loc="qingdao">
-      <div class="twin-indicator"></div>
-      <div class="twin-name">市北区 · zz</div>
-      <div class="twin-temp">${fmt(ct1.temperature_2m)}</div>
-      <div class="twin-icon">${weatherSVG(ct1.weather_code, 38)}</div>
-      <div class="twin-cond">${i1.cond}</div>
-      <div class="twin-hilo">最高 ${fmt(d1.temperature_2m_max[0])} · 最低 ${fmt(d1.temperature_2m_min[0])}</div>
-    </div>
-    <div class="twin-card glass${active==='jinan'?' active':''}" data-loc="jinan">
-      <div class="twin-indicator"></div>
-      <div class="twin-name">长清区 · 噜噜</div>
-      <div class="twin-temp">${fmt(ct2.temperature_2m)}</div>
-      <div class="twin-icon">${weatherSVG(ct2.weather_code, 38)}</div>
-      <div class="twin-cond">${i2.cond}</div>
-      <div class="twin-hilo">最高 ${fmt(d2.temperature_2m_max[0])} · 最低 ${fmt(d2.temperature_2m_min[0])}</div>
-    </div>`;
-
-  document.querySelectorAll('.twin-card').forEach(card => {
-    card.addEventListener('click', () => switchLoc(card.dataset.loc));
   });
 
-  // Distance
-  document.getElementById('loveDistance').textContent = `青岛 ↔ 济南 · ${DISTANCE_KM} 公里`;
+  return g;
 }
 
-function renderMood(data1, data2) {
-  const m = moodMsg(data1, data2);
-  document.getElementById('mood').innerHTML = `
-    <div class="mood-emoji">${m.emoji}</div>
-    <div class="mood-text">${m.msg}</div>`;
-}
+window.startRoseVR=function(){
+  if(roseData)return;
+  const container=document.getElementById('rosevr');
+  const size=Math.min(W,H)*.94;
 
-function renderDateCard(data1, data2) {
-  const d = dateIdea(data1, data2);
-  document.getElementById('dateCard').innerHTML = `
-    <div class="date-label">${d.emoji} 在一起可以做什么</div>
-    <div class="date-idea">${d.text}</div>`;
-}
+  const scene=new THREE.Scene();
+  scene.background=new THREE.Color('#07060a');
+  scene.fog=new THREE.Fog('#07060a',2.5,16);
 
-function renderHourly(data) {
-  const h=data.hourly, now=new Date(); let html='';
-  for (let i=0;i<Math.min(24,h.time.length);i++) {
-    const t=new Date(h.time[i]), isNow=t.getHours()===now.getHours()&&i<2;
-    const rp=h.precipitation_probability[i];
-    html+=`<div class="hourly-item">
-      <div class="time">${isNow?'现在':t.getHours()+'时'}</div>
-      <div class="icon-svg">${weatherSVG(h.weather_code[i], 26)}</div>
-      <div class="temp">${Math.round(h.temperature_2m[i])}°</div>
-      <div class="rain-dot">${rp>=30?rp+'%':'&nbsp;'}</div>
-    </div>`;
+  const cam=new THREE.PerspectiveCamera(38,1,.1,50);
+  cam.position.set(0,.8,3.8);cam.lookAt(0,.2,0);
+
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setSize(size,size);renderer.setPixelRatio(Math.min(dpr,2));
+  renderer.shadowMap.enabled=true;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.3;
+  container.appendChild(renderer.domElement);
+
+  // Beautiful rim + key lighting
+  scene.add(new THREE.AmbientLight('#2a1a22',1.8));
+  const key=new THREE.DirectionalLight('#ffe8d0',5.5);key.position.set(4,6,7);scene.add(key);
+  const fill=new THREE.DirectionalLight('#ff99aa',2.5);fill.position.set(-4,2,-3);scene.add(fill);
+  const rimLight=new THREE.DirectionalLight('#aaccff',2.2);rimLight.position.set(0,-1,5);scene.add(rimLight);
+  const topLight=new THREE.PointLight('#ffccaa',15,10);topLight.position.set(0,3.5,1);scene.add(topLight);
+
+  // Controls
+  const controls=new OrbitControls(cam,renderer.domElement);
+  controls.target.set(0,.15,0);controls.enableDamping=true;controls.dampingFactor=.06;
+  controls.autoRotate=true;controls.autoRotateSpeed=.6;
+  controls.minDistance=2.0;controls.maxDistance=10;controls.maxPolarAngle=Math.PI*.78;
+  controls.update();
+
+  // Large centerpiece rose
+  const centerRose=createRose();
+  centerRose.scale.setScalar(2.6);
+  scene.add(centerRose);
+
+  // 2 smaller accent roses
+  for(let si=0; si<2; si++){
+    const sr=createRose();
+    const sx=(si===0?1.1:-1.1), sz=(si===0?.4:-.3);
+    sr.position.set(sx, -.25, sz);
+    sr.scale.setScalar(1.5);
+    sr.rotation.y=si*Math.PI*.7;
+    scene.add(sr);
   }
-  document.getElementById('hourlyScroll').innerHTML=html;
-}
 
-function renderDetails(data) {
-  const cur=data.current, day=data.daily, info=w(cur.weather_code);
-  const fl=Math.round(cur.apparent_temperature);
-  const hum=cur.relative_humidity;
-  const rainProb=day.precipitation_probability_max?.[0]??cur.precipitation??0;
-  const uv=cur.uv_index??0;
-  const wind=Math.round(cur.wind_speed_10m??0);
-  const gap=rainGap(data.hourly);
-  const cl=clothing(cur.temperature_2m, cur.apparent_temperature, cur.weather_code, uv);
-  const wet=info.bg==='rain'||info.bg==='thunder';
-  const rc=wet?'var(--rain-accent)':'var(--text-primary)';
-  const user = active === 'qingdao' ? 'zz' : '噜噜';
-
-  document.getElementById('cards').innerHTML=`
-    <div class="card glass" style="--delay:0.18s">
-      <div class="card-label">体感温度</div>
-      <div class="card-value">${fmt(fl)}</div>
-      <div class="card-sub">${fl>cur.temperature_2m?'比实际温度感觉更热':fl<cur.temperature_2m?'比实际温度感觉更冷':'与实际温度一致'}</div>
-    </div>
-    <div class="card glass" style="--delay:0.22s">
-      <div class="card-label">降雨概率</div>
-      <div class="card-value" style="color:${rc}">${rainProb}%</div>
-      <div class="card-sub">${rainProb>=50?'降雨可能性较高':rainProb>=20?'小概率降雨':'降雨可能性低'}</div>
-    </div>
-    <div class="card glass" style="--delay:0.26s">
-      <div class="card-label">${wet?'正在下雨':'距离下雨'}</div>
-      <div class="card-value small" style="color:${rc}">${gap}</div>
-      <div class="card-sub">${wet?'出门记得带伞':'基于未来 24 小时预报'}</div>
-    </div>
-    <div class="card glass" style="--delay:0.30s">
-      <div class="card-label">湿度与风力</div>
-      <div class="card-value small">${hum}%<span style="font-size:14px;color:var(--text-tertiary);margin:0 6px;">湿度</span></div>
-      <div class="card-sub">风速 ${wind} 公里/时 · 紫外线指数 ${uv}（${uv>=6?'强':uv>=3?'中等':'弱'}）</div>
-    </div>
-    <div class="card glass full" style="--delay:0.34s">
-      <div class="card-label">${user} 的出行衣着建议</div>
-      <div class="card-sub" style="font-size:14px;color:#fff;margin-top:0">${cl.travel}</div>
-    </div>
-    <div class="card glass full" style="--delay:0.38s">
-      <div class="card-label">防护建议</div>
-      <div class="card-sub" style="font-size:14px;color:#fff;margin-top:0">${cl.protect}</div>
-    </div>`;
-}
-
-function loading() {
-  document.getElementById('twin').innerHTML = '<div class="loading-area" style="grid-column:1/-1"><div class="spinner"></div></div>';
-  document.getElementById('mood').innerHTML = '<div class="loading-area" style="padding:20px"><div class="spinner"></div></div>';
-  document.getElementById('dateCard').innerHTML = '<div class="loading-area" style="padding:20px"><div class="spinner"></div></div>';
-  document.getElementById('hourlyScroll').innerHTML = '<div class="loading-area"><div class="spinner"></div></div>';
-  document.getElementById('cards').innerHTML = '<div class="loading-area" style="grid-column:1/-1"><div class="spinner"></div></div>';
-}
-
-// ── Switch ──
-async function switchLoc(key) {
-  if (active === key) return;
-  active = key;
-  document.querySelectorAll('.segmented button').forEach(b => b.classList.remove('active'));
-  document.querySelector(`[data-loc="${key}"]`).classList.add('active');
-  document.getElementById('slider').classList.toggle('right', key === 'jinan');
-
-  const d = cache[key];
-  const other = cache[key === 'qingdao' ? 'jinan' : 'qingdao'];
-
-  if (d) {
-    const info = w(d.current.weather_code);
-    setWeather(info.bg);
-    renderHourly(d);
-    renderDetails(d);
-    if (other) renderTwin(cache.qingdao, cache.jinan);
-  }
-}
-
-// ── Init ──
-async function init() {
-  document.getElementById('segmented').addEventListener('click', e => {
-    const btn = e.target.closest('button'); if (btn) switchLoc(btn.dataset.loc);
+  // Stems for accent roses
+  const stemMat=new THREE.MeshStandardMaterial({color:'#1d4a12',roughness:.5});
+  const stemPos=[[1.1,-.25,.4],[-1.1,-.25,-.3]];
+  stemPos.forEach(([sx,sy,sz])=>{
+    const st=new THREE.Mesh(new THREE.CylinderGeometry(.03,.05,1.8,12),stemMat);
+    st.position.set(sx,sy-1.1,sz);scene.add(st);
   });
+  // Center rose stem
+  const cs=new THREE.Mesh(new THREE.CylinderGeometry(.04,.06,2.0,12),stemMat);
+  cs.position.set(0,-1.3,0);scene.add(cs);
 
-  setInterval(async () => {
-    try {
-      const [qd, jn] = await Promise.all([fetchW('qingdao'), fetchW('jinan')]);
-      cache.qingdao = qd; cache.jinan = jn;
-      const d = cache[active], info = w(d.current.weather_code);
-      setWeather(info.bg);
-      renderTwin(qd, jn); renderMood(qd, jn); renderDateCard(qd, jn);
-      renderHourly(d); renderDetails(d);
-    } catch(e) {}
-  }, 900000);
+  // Text sprite — floating above
+  const tc=document.createElement('canvas');tc.width=512;tc.height=128;
+  const tx=tc.getContext('2d');tx.fillStyle='#f5f0eb';tx.font='bold 44px "Songti SC","Noto Serif SC",serif';tx.textAlign='center';tx.fillText('你为玫瑰花费的时间',256,52);
+  tx.fillText('才让她变得如此重要',256,100);
+  const tt=new THREE.CanvasTexture(tc);tt.minFilter=THREE.LinearFilter;
+  const textSprite=new THREE.Sprite(new THREE.SpriteMaterial({map:tt,transparent:true,opacity:.9}));
+  textSprite.position.set(0,2.2,0);textSprite.scale.set(2.0,.5,1);scene.add(textSprite);
 
-  loading();
-  try {
-    const [qd, jn] = await Promise.all([fetchW('qingdao'), fetchW('jinan')]);
-    cache.qingdao = qd; cache.jinan = jn;
-    const d = cache[active], info = w(d.current.weather_code);
-    setWeather(info.bg);
-    renderTwin(qd, jn); renderMood(qd, jn); renderDateCard(qd, jn);
-    renderHourly(d); renderDetails(d);
-  } catch(e) {
-    document.getElementById('cards').innerHTML = '<div class="loading-area" style="grid-column:1/-1;color:var(--text-secondary)">加载失败，请刷新重试</div>';
+  // Fireflies
+  const pc=120;const pg=new THREE.BufferGeometry();const pp=new Float32Array(pc*3);const pd=[];
+  for(let i=0;i<pc;i++){const a=Math.random()*Math.PI*2,rd=.5+Math.random()*3.0,ht=-.8+Math.random()*3.2;pp[i*3]=Math.cos(a)*rd;pp[i*3+1]=ht;pp[i*3+2]=Math.sin(a)*rd;pd.push({ba:a,br:rd,h:ht,sp:.25+Math.random()*.9,ph:Math.random()*Math.PI*2})}
+  pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+  const pmat=new THREE.PointsMaterial({color:'#ffd700',size:.03,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.7});
+  const pts=new THREE.Points(pg,pmat);scene.add(pts);
+
+  // Ground glow
+  const sg=new THREE.PlaneGeometry(8,8);
+  const sm=new THREE.ShaderMaterial({uniforms:{uT:{value:0}},vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,fragmentShader:`varying vec2 vUv;uniform float uT;void main(){float d=length(vUv-.5)*2.;float a=smoothstep(1.,0.,d)*.12;gl_FragColor=vec4(1.,.84,0,a*(.7+.3*sin(uT*1.5)));}`,transparent:true,depthWrite:false});
+  const sp=new THREE.Mesh(sg,sm);sp.rotation.x=-Math.PI/2;sp.position.y=-2.0;scene.add(sp);
+
+  roseData={scene,cam,renderer,controls,centerRose,textSprite,pts,pg,pp,pd,pc,sm,startTime:performance.now()};
+
+  setTimeout(()=>{if(window.cur===10)window.go(10,11)},16000);
+  const s10el=document.getElementById('s10');
+  s10el.addEventListener('click',function sk(){if(window.cur===10)window.go(10,11);s10el.removeEventListener('click',sk)});
+
+  function anim(ts){
+    if(!roseData)return;
+    roseData.fid=requestAnimationFrame(anim);
+    const et=(ts-roseData.startTime)*.001;
+    roseData.controls.update();
+    roseData.sm.uniforms.uT.value=et;
+    roseData.textSprite.position.y=2.2+Math.sin(et*1.3)*.12;
+
+    const pa=roseData.pg.attributes.position.array;
+    for(let i=0;i<roseData.pc;i++){const d=roseData.pd[i];d.ba+=d.sp*.003;const a=d.ba,rd=d.br+Math.sin(et*2+d.ph)*.25;d.h+=Math.sin(et*2.5+d.ph)*.0015;if(d.h>2.5)d.h=-.8;if(d.h<-.8)d.h=2.5;pa[i*3]=Math.cos(a)*rd;pa[i*3+1]=d.h;pa[i*3+2]=Math.sin(a)*rd}
+    roseData.pg.attributes.position.needsUpdate=true;
+    roseData.renderer.render(roseData.scene,roseData.cam);
   }
+  roseData.fid=requestAnimationFrame(anim);
+};
+
+window.stopRoseVR=function(){
+  if(!roseData)return;
+  cancelAnimationFrame(roseData.fid);
+  roseData.renderer.domElement.remove();
+  roseData=null;
+};
+</script>
+
+<script>
+// ============================================================
+// S10: ANSWER → CONFETTI
+// ============================================================
+window.answer=function(){
+  spawnFloatEls(120);
+  for(let i=0;i<140;i++){const cf=document.createElement('div');cf.style.cssText=['position:fixed;pointer-events:none;z-index:30','width:'+(3+Math.random()*12)+'px','height:'+(3+Math.random()*12)+'px','background:'+['#c9a74b','#e8d48b','#d4a0a0','#ff6b8a','#f5f0eb','#ffb8c6','#b8d0e8'][Math.floor(Math.random()*7)],'border-radius:'+(Math.random()>.5?'50%':'2px'),'left:'+(15+Math.random()*70)+'vw','top:'+(15+Math.random()*60)+'vh','animation:cfFall '+(2+Math.random()*4)+'s ease-in forwards','animation-delay:'+Math.random()*.8+'s','--cx:'+(Math.random()-.5)*200+'px','--cy:'+(Math.random()-.5)*200+'px','--ex:'+(Math.random()-.5)*500+'px','--ey:'+(-50-Math.random()*450)+'px','--cr:'+Math.random()*360+'deg','--er:'+Math.random()*720+'deg'].join(';');document.body.appendChild(cf);setTimeout(()=>cf.remove(),4500)}
+  setTimeout(()=>go(11,12),1400);
+};
+const cs=document.createElement('style');cs.textContent='@keyframes cfFall{0%{opacity:1;transform:translate(0,0) rotate(0deg) scale(1)}20%{opacity:1;transform:translate(var(--cx),var(--cy)) rotate(var(--cr)) scale(1.2)}100%{opacity:0;transform:translate(var(--ex),var(--ey)) rotate(var(--er)) scale(.3)}}';document.head.appendChild(cs);
+
+// ============================================================
+// S11: FIREWORKS
+// ============================================================
+function startFireworks(){
+  fwC.style.zIndex='15';
+  const FC=['#ff2d55','#ff6b8a','#ff9f43','#feca57','#ff6b6b','#ff4757','#ff7979','#ff4081','#e040fb','#7c4dff','#40c4ff','#69f0ae','#ffab40','#ffd740','#ff5252','#ea80fc','#b2ff59','#ff1744'];
+  const rc=()=>FC[Math.floor(Math.random()*FC.length)];
+  const rockets=[],sparks=[],secondStage=[];
+  const st=performance.now();
+	  // Colored Disney-style castle — bottom 1/4 of screen
+	  function drawCastle(){
+	    const cx=W/2, by=H, cw=Math.min(W*.78, H*.42), ch=H*.28;
+	    const gx=cx-cw*.5, gy=by-ch;
+	    // Sky glow behind castle
+	    (function(ctx){const g=ctx.createRadialGradient(cx*dpr,gy*dpr,0,cx*dpr,gy*dpr,ch*dpr*2);g.addColorStop(0,'rgba(30,20,50,.25)');g.addColorStop(.5,'rgba(20,15,40,.12)');g.addColorStop(1,'rgba(7,6,10,0)');ctx.fillStyle=g;ctx.fillRect(gx*dpr,0,cw*dpr,by*dpr)})(fwX);
+	    function tower(tx,ty,tw,th,rh,rc,wc){
+	      fwX.fillStyle=rc;
+	      fwX.beginPath();fwX.moveTo((tx-tw*.08)*dpr,ty*dpr);fwX.lineTo((tx+tw*.5)*dpr,(ty-rh)*dpr);fwX.lineTo((tx+tw+tw*.08)*dpr,ty*dpr);fwX.closePath();fwX.fill();
+	      fwX.fillRect((tx-tw*.02)*dpr,(ty-rh*.25)*dpr,(tw+tw*.04)*dpr,rh*.28*dpr);
+	      fwX.fillStyle=wc;fwX.fillRect(tx*dpr,ty*dpr,tw*dpr,(by-ty)*dpr);
+	      fwX.fillStyle=rc;
+	      for(let cx2=tx;cx2<tx+tw-tw*.12;cx2+=tw*.12)fwX.fillRect(cx2*dpr,(ty-th*.03)*dpr,tw*.08*dpr,th*.06*dpr);
+	    }
+	    const rb='#4a7eb5',rd='#2d5a8a',wc2='#eadcc8',wd='#d4c4a8',gld='#c9a74b',pr='#c47a9a';
+	    const mtw=cw*.18,mtx=cx-mtw*.5,mty=gy+ch*.08,mth=ch*.62;
+	    tower(mtx,mty,mtw,mth,ch*.45,rb,wc2);
+	    fwX.fillStyle=gld;fwX.beginPath();fwX.moveTo((cx-cw*.01)*dpr,mty*dpr);fwX.lineTo(cx*dpr,(mty-ch*.55)*dpr);fwX.lineTo((cx+cw*.01)*dpr,mty*dpr);fwX.closePath();fwX.fill();
+	    fwX.fillStyle='#e8a0b0';fwX.beginPath();fwX.moveTo(cx*dpr,(mty-ch*.52)*dpr);fwX.lineTo((cx+cw*.04)*dpr,(mty-ch*.47)*dpr);fwX.lineTo(cx*dpr,(mty-ch*.44)*dpr);fwX.closePath();fwX.fill();
+	    const ltw=cw*.14,ltx=gx+cw*.05,lty=gy+ch*.32,lth=ch*.4;
+	    tower(ltx,lty,ltw,lth,ch*.3,pr,wd);
+	    tower(gx+cw*.79,gy+ch*.32,cw*.14,ch*.4,ch*.3,pr,wd);
+	    tower(gx+cw*.02,gy+ch*.48,cw*.08,ch*.25,ch*.18,rd,wd);
+	    tower(gx+cw*.88,gy+ch*.48,cw*.08,ch*.25,ch*.18,rd,wd);
+	    fwX.fillStyle=wc2;fwX.fillRect((ltx+ltw)*dpr,(gy+ch*.48)*dpr,(mtx-ltx-ltw)*dpr,(by-gy-ch*.48)*dpr);
+	    fwX.fillRect((mtx+mtw)*dpr,(gy+ch*.48)*dpr,(gx+cw*.79-mtx-mtw)*dpr,(by-gy-ch*.48)*dpr);
+	    fwX.fillStyle='#1a1020';fwX.beginPath();fwX.arc(cx*dpr,(gy+ch*.62)*dpr,cw*.07*dpr,Math.PI,0);fwX.fill();
+	    fwX.fillStyle=gld;fwX.fillRect((cx-cw*.07)*dpr,(gy+ch*.62)*dpr,cw*.14*dpr,cw*.015*dpr);
+	    fwX.fillStyle='rgba(255,220,160,.55)';const ww=cw*.022,wh=ch*.05;
+	    for(let wy=mty+ch*.08;wy<mty+mth-ch*.08;wy+=ch*.12){fwX.fillRect((cx-ww*1.4)*dpr,wy*dpr,ww*dpr,wh*dpr);fwX.fillRect((cx+ww*.4)*dpr,wy*dpr,ww*dpr,wh*dpr)}
+	    for(let wy=lty+ch*.08;wy<lty+lth-ch*.08;wy+=ch*.14)fwX.fillRect((ltx+ltw*.35)*dpr,wy*dpr,ww*dpr,wh*dpr);
+	    for(let wy=gy+ch*.4;wy<gy+ch*.4+lth-ch*.08;wy+=ch*.14)fwX.fillRect((gx+cw*.79+cw*.14*.35)*dpr,wy*dpr,ww*dpr,wh*dpr);
+	    fwX.fillStyle='rgba(255,200,180,.5)';fwX.beginPath();fwX.arc(cx*dpr,(gy+ch*.38)*dpr,cw*.025*dpr,0,Math.PI*2);fwX.fill();
+	  }
+
+  function launch(x,tY,color,speed){rockets.push({x,y:H,targetY:tY,speed:speed||(4+Math.random()*9),color,trail:[]})}
+  function burst(x,y,color,type,size=1){
+    if(type==='ring'){const n=40+Math.floor(Math.random()*60);for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2;sparks.push({x,y,vx:Math.cos(a)*(3+Math.random()*8)*size,vy:Math.sin(a)*(3+Math.random()*8)*size,life:1,decay:.006+.018*Math.random(),color,size:.5+Math.random()*3.2})}}
+    else if(type==='double-ring'){for(let r=0;r<2;r++){const n=30+Math.floor(Math.random()*40),rr=(3+r*2.2)*size;for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=rr+Math.random()*2.5;sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,decay:.006+.016*Math.random(),color:r===0?color:rc(),size:.4+Math.random()*2.8})}}}
+    else if(type==='willow'){for(let i=0;i<55;i++){const a=(Math.random()-.5)*Math.PI*.8-Math.PI/2;sparks.push({x,y,vx:Math.cos(a)*(2+Math.random()*6)*size,vy:Math.sin(a)*(2+Math.random()*6)*size,life:1.3,decay:.003+.008*Math.random(),color:rc(),size:.4+Math.random()*3})}}
+    else if(type==='spiral'){for(let i=0;i<70;i++){const a=i*Math.PI*2/18,s=3+Math.random()*4.5*size;sparks.push({x,y,vx:Math.cos(a)*s*.6,vy:Math.sin(a)*s*.6,life:1.1,decay:.004+.01*Math.random(),color,size:.4+Math.random()*2.8})}}
+    else if(type==='crossette'){const n=5+Math.floor(Math.random()*7);for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=4+Math.random()*6*size;const sx=x+Math.cos(a)*s,sy=y+Math.sin(a)*s;sparks.push({x:sx,y:sy,vx:0,vy:0,life:.35,decay:.014,color,size:2});secondStage.push({x:sx,y:sy,color,delay:.22+Math.random()*.3,size:size*.6})}}
+    else if(type==='star'){for(let p=0;p<5;p++){const a=p*Math.PI*2/5-Math.PI/2;for(let j=0;j<16;j++){const sa=a+(Math.random()-.5)*.35,ss=(3.5+Math.random()*5)*size;sparks.push({x,y,vx:Math.cos(sa)*ss*(.3+Math.random()*.6),vy:Math.sin(sa)*ss*(.3+Math.random()*.6),life:1,decay:.006+.014*Math.random(),color,size:.4+Math.random()*3})}}}
+    else{const n=60+Math.floor(Math.random()*120);for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2;sparks.push({x,y,vx:Math.cos(a)*(1.5+Math.random()*9)*size,vy:Math.sin(a)*(1.5+Math.random()*9)*size,life:1,decay:.005+.018*Math.random(),color,size:.6+Math.random()*4.5})}}
+  }
+  function heartBurst(x,y,color){const n=180;for(let i=0;i<n;i++){const t=i/n*Math.PI*2,hx=16*Math.pow(Math.sin(t),3),hy=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)),scale=2+Math.random()*3;sparks.push({x,y,vx:hx*scale,vy:hy*scale,life:1,decay:.007+.022*Math.random(),color:color||'#ff2d55',size:.8+Math.random()*4.5})}}
+  const ht=[5,12,20,28,36,44,52,60,68,76,84,92,100];let lhi=-1;
+
+  (function fwLoop(ts){
+    const et=(ts-st)*.001;
+    fwX.fillStyle='rgba(7,6,10,.12)';fwX.fillRect(0,0,fwC.width,fwC.height);
+    drawCastle();
+    let rate=.05;if(et>30)rate=.04;if(et>55)rate=.03;if(et>80)rate=.022;
+    if(Math.random()<rate)launch(Math.random()*W,Math.random()*H*.48,rc());
+    if(Math.random()<rate*.35){const cx=W*.2+Math.random()*W*.6,ty=Math.random()*H*.38;launch(cx,ty,rc());setTimeout(()=>launch(cx+30+Math.random()*110,ty+Math.random()*60,rc()),120);setTimeout(()=>launch(cx-30-Math.random()*110,ty+Math.random()*60,rc()),240)}
+    const cs=Math.floor(et);for(const h of ht){if(cs>=h&&lhi<h){lhi=h;heartBurst(W/2+Math.random()*300-150,H*.18+Math.random()*160,'#ff2d55');setTimeout(()=>heartBurst(W/2+Math.random()*300-150,H*.22+Math.random()*140,'#ff6b8a'),350)}}
+    if(et>88&&et<96&&Math.random()<.25){for(let j=0;j<5;j++){setTimeout(()=>{const types=['ring','star','crossette','double-ring','spiral','willow'];burst(W*.1+Math.random()*W*.8,H*.1+Math.random()*H*.35,rc(),types[j%6],.6+Math.random()*1.4)},j*110)}}
+    for(let i=secondStage.length-1;i>=0;i--){const ss=secondStage[i];ss.delay-=.016;if(ss.delay<=0){burst(ss.x,ss.y,ss.color,'star',ss.size);secondStage.splice(i,1)}}
+    for(let i=rockets.length-1;i>=0;i--){const r=rockets[i];r.y-=r.speed;r.trail.push({x:r.x,y:r.y,life:1});if(r.trail.length>16)r.trail.shift();for(const tr of r.trail)tr.life-=.06;fwX.fillStyle='#fff';fwX.shadowColor='#fff';fwX.shadowBlur=16;fwX.beginPath();fwX.arc(r.x*dpr,r.y*dpr,3*dpr,0,Math.PI*2);fwX.fill();fwX.shadowBlur=0;for(const tr of r.trail){if(tr.life<=0)continue;fwX.fillStyle=`rgba(255,230,200,${tr.life*.6})`;fwX.beginPath();fwX.arc(tr.x*dpr,tr.y*dpr,2*dpr,0,Math.PI*2);fwX.fill()}if(r.y<=r.targetY){const types=['normal','normal','ring','willow','star','crossette','double-ring','spiral'];burst(r.x,r.y,r.color,types[Math.floor(Math.random()*types.length)]);rockets.splice(i,1)}}
+    for(let i=sparks.length-1;i>=0;i--){const s=sparks[i];s.x+=s.vx;s.y+=s.vy;s.vy+=.045;s.vx*=.993;s.vy*=.993;s.life-=s.decay;if(s.life<=0){sparks.splice(i,1);continue}fwX.globalAlpha=s.life;fwX.fillStyle=s.color;fwX.shadowColor=s.color;fwX.shadowBlur=14;fwX.beginPath();fwX.arc(s.x*dpr,s.y*dpr,s.size*dpr,0,Math.PI*2);fwX.fill();fwX.globalAlpha=s.life*.15;fwX.beginPath();fwX.arc(s.x*dpr,s.y*dpr,s.size*3.5*dpr,0,Math.PI*2);fwX.fill()}fwX.globalAlpha=1;fwX.shadowBlur=0;
+    if(et<105)requestAnimationFrame(fwLoop);
+  })(performance.now());
 }
-init();
+
+// ============================================================
+// START
+// ============================================================
+window.addEventListener('load',()=>{
+  setTimeout(()=>document.getElementById('loader').classList.add('hide'),600);
+  setTimeout(()=>go(0,1),1200);   // Envelope opens
+  setTimeout(()=>go(1,2),4800);   // dear xiaochao
+  setTimeout(()=>go(2,3),8200);   // Lyric 1
+  setTimeout(()=>go(3,4),11800);  // Lyric 2
+  setTimeout(()=>go(4,5),15400);  // Lyric 3
+  setTimeout(()=>go(5,6),19000);  // Lyric 4
+  setTimeout(()=>go(6,7),22600);  // Lyric 5
+  setTimeout(()=>go(7,8),26200);  // I love you
+  setTimeout(()=>go(8,9),30400);  // Ring emoji
+  // S9 ring tap-to-skip
+  document.getElementById('s9').addEventListener('click',function sk(){if(cur===9)go(9,10);document.getElementById('s9').removeEventListener('click',sk)});
+  // S9 ring auto-advances to S10 after 6s (in go function)
+  // S10 rose VR auto-advances to S11 after 14s
+  // S11 waits for click to S12 fireworks
+  // S8 ring auto-advances → S9 after 10s
+  // S9 rose VR auto-advances → S10 after 14s
+  // S10 waits for click → S11 fireworks
+});
 </script>
 </body>
 </html>

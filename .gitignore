@@ -1,8 +1,57 @@
-node_modules/
+# macOS system
 .DS_Store
+.CFUserTextEncoding
+Library/
+
+# Large user directories
+.Trash/
+Downloads/
+Movies/
+Music/
+Pictures/
+Desktop/
+Documents/
+Public/
+Applications/
+
+# Cache & temp
+.cache/
+.matplotlib/
+.npm/
+__pycache__/
+*.pyc
+
+# Dev tools (config/cache)
+.local/
+.config/
+.cursor/
+.codex/
+.trae-cn/
+.cc-switch/
+.easyocr/
+
+# Agent / AI tools
+.agent-browser/
+.agents/
+.openclaw/
+.qclaw/
+.skillhub/
+.n8n/
+
+# Shell
+.zsh_history
+.zsh_sessions/
+.zshrc.save
+
+# Sensitive (never track)
+.ssh/
+.deepseek_key
+.npmrc
+.gitconfig
+
+# Project specific
+node_modules/
 *.log
 .imessage_bot_*
 imessage_bot.py
 heart.html
-__pycache__/
-*.pyc
